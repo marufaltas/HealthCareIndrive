@@ -1,0 +1,26 @@
+.app-root {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #38b2ac 10%, #94cbff 100%);
+  font-family: 'Tajawal', 'Cairo', Arial, sans-serif;
+}
+
+.welcome-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #38b2ac 10%, #3182ce 100%);
+  color: #fff;
+  font-size: 2.4em;
+}
+
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  padding-bottom: 80px;
+}

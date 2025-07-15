@@ -1,0 +1,67 @@
+.login-register-bg {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #38b2ac 10%, #3182ce 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login-register-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px #0002;
+  padding: 38px 28px 28px 28px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+}
+.login-register-form input,
+.login-register-form select {
+  width: 100%;
+  margin-bottom: 13px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  border: 1px solid #bcd;
+  font-size: 1.07em;
+  background: #f7faff;
+  direction: rtl;
+  box-sizing: border-box;
+}
+.login-register-form label {
+  display: block;
+  text-align: right;
+  color: #215175;
+  margin-bottom: 4px;
+  font-size: 0.97em;
+}
+.login-register-form button {
+  width: 100%;
+  padding: 12px 0;
+  background: linear-gradient(90deg, #38b2ac, #3182ce);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1em;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+.login-register-switch {
+  margin-top: 18px;
+  font-size: 1em;
+}
+.login-register-switch button {
+  background: none;
+  border: none;
+  color: #3182ce;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1em;
+  padding: 0;
+}
+@media (max-width: 600px) {
+  .login-register-card {
+    padding: 18px 6px 18px 6px;
+    max-width: 98vw;
+  }
+}

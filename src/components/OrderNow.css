@@ -1,0 +1,373 @@
+.order-now-container {
+  background: linear-gradient(to right, rgb(60, 202, 212), rgb(144, 222, 224));
+  border-radius: 22px;
+  box-shadow: 0 3px 16px #0001;
+  margin: 24px auto;
+  max-width: 900px;
+  padding: 28px 14px 28px 14px;
+}
+
+.order-form {
+  background: linear-gradient(to right, rgb(60, 202, 212), rgb(144, 222, 224));
+  border-radius: 18px;
+  box-shadow: 0 1px 8px #0001;
+  padding: 32px 18px 22px 18px;
+  max-width: 720px;
+  margin: 18px auto 0 auto;
+}
+
+.order-form h2 {
+  text-align: center;
+  color: #215175;
+  margin-bottom: 18px;
+}
+
+.label {
+  display: block;
+  margin-bottom: 7px;
+  color: #255;
+  font-weight: bold;
+  margin-top: 13px;
+}
+
+.services-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 13px;
+  margin-bottom: 18px;
+  margin-top: 9px;
+}
+
+/* تصميم عصري لبطاقات الخدمات */
+.services-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.2rem;
+  margin: 1.5rem 0;
+}
+.service-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px #0001;
+  padding: 1.2rem 1rem;
+  cursor: pointer;
+  transition: box-shadow 0.2s, border 0.2s;
+  border: 2px solid transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.service-card.selected {
+  border: 2px solid #1976d2;
+  box-shadow: 0 4px 18px #1976d233;
+}
+.service-name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #1976d2;
+}
+.service-price {
+  font-size: 1rem;
+  color: #43a047;
+  font-weight: 500;
+}
+.price-box {
+  margin: 1rem 0 0.5rem 0;
+  font-size: 1.1rem;
+  color: #1976d2;
+}
+.main-price {
+  color: #43a047;
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+.order-card {
+  width: 140px;
+  height: 160px;
+  border-radius: 18px;
+  box-shadow: 0 2px 10px #0002;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.2em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+.order-card:hover {
+  transform: translateY(-7px) scale(1.04);
+  box-shadow: 0 6px 24px #0003;
+}
+.order-card-icon {
+  width: 54px;
+  height: 54px;
+  margin-bottom: 12px;
+}
+.order-step {
+  max-width: 400px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 10px #0001;
+  padding: 28px 18px;
+  text-align: center;
+}
+
+.order-done-msg {
+  padding: 60px 20px;
+  background: #fff;
+  border-radius: 22px;
+  text-align: center;
+  color: #215175;
+  font-size: 1.2em;
+  margin: 38px auto 0 auto;
+  max-width: 500px;
+  box-shadow: 0 2px 12px #0002;
+}
+
+.order-done-msg button {
+  margin-top: 22px;
+  padding: 11px 22px;
+  background: #3182ce;
+  color: #fff;
+  border: none;
+  border-radius: 9px;
+  font-size: 1.05em;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#map {
+  border-radius: 18px;
+  margin-bottom: 18px;
+  box-shadow: 0 2px 10px #0001;
+  min-height: 250px;
+  max-width: 100%;
+}
+
+.order-cards-container {
+  text-align: center;
+  margin: 30px auto;
+}
+.cards-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+/* تصميم عصري وحديث لقائمة الخدمات */
+.services-list-grid-modern {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0 1.5rem 0;
+}
+.service-card-modern {
+  background: linear-gradient(135deg, #f7fafc 60%, #e3f2fd 100%);
+  border-radius: 18px;
+  box-shadow: 0 4px 24px #1976d21a;
+  padding: 1.5rem 1rem 1.2rem 1rem;
+  cursor: pointer;
+  transition: box-shadow 0.2s, border 0.2s, transform 0.15s;
+  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  min-height: 90px;
+  position: relative;
+}
+.service-card-modern.selected {
+  border: 2px solid #1976d2;
+  box-shadow: 0 6px 32px #1976d244;
+  transform: scale(1.04);
+}
+.service-icon-modern {
+  font-size: 2.2rem;
+  background: #1976d2;
+  color: #fff;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px #1976d233;
+}
+.service-info-modern {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.service-name-modern {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #1976d2;
+  margin-bottom: 0.2rem;
+}
+.service-price-modern {
+  font-size: 1rem;
+  color: #43a047;
+  font-weight: 500;
+}
+.next-btn-modern {
+  background: linear-gradient(90deg, #1976d2 60%, #43a047 100%);
+  color: #fff;
+  border: none;
+  padding: 0.9rem 2.5rem;
+  border-radius: 8px;
+  font-size: 1.15rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+  box-shadow: 0 2px 12px #1976d233;
+  transition: background 0.2s, transform 0.15s;
+}
+.next-btn-modern:disabled {
+  background: #bdbdbd;
+  color: #fff;
+  cursor: not-allowed;
+}
+.no-services {
+  grid-column: 1/-1;
+  text-align: center;
+  color: #888;
+  font-size: 1.1rem;
+  padding: 2rem 0;
+}
+
+/* زر التالي العصري أسفل آخر خدمة مختارة */
+.floating-next-btn {
+  display: block;
+  margin: 18px auto 0 auto;
+  background: linear-gradient(90deg, #38b2ac 60%, #3182ce 100%);
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.1em;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 38px;
+  box-shadow: 0 2px 12px #3182ce33;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+}
+.floating-next-btn:hover {
+  background: linear-gradient(90deg, #3182ce 60%, #38b2ac 100%);
+  box-shadow: 0 4px 24px #3182ce44;
+  transform: translateY(-2px) scale(1.04);
+}
+
+/* مدخلات عصرية */
+.modern-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #38b2ac;
+  font-size: 1.08em;
+  margin-bottom: 1.1rem;
+  background: #f7fafc;
+  transition: border 0.2s;
+}
+.modern-input:focus {
+  border: 2px solid #3182ce;
+  outline: none;
+}
+
+.location-row-modern {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 1.2rem;
+}
+.detect-btn-modern {
+  background: #3182ce;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px #3182ce22;
+}
+.detect-btn-modern:hover {
+  background: #38b2ac;
+}
+
+.modern-price-box {
+  background: #e3f2fd;
+  border-radius: 10px;
+  padding: 10px 0;
+  margin: 1.2rem 0 1rem 0;
+  font-size: 1.13em;
+  color: #1976d2;
+}
+
+/* زر إرسال الطلب العصري */
+.modern-send-btn {
+  width: 100%;
+  background: linear-gradient(90deg, #38b2ac 60%, #3182ce 100%);
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.15em;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 0;
+  margin-top: 1.2rem;
+  box-shadow: 0 2px 12px #3182ce33;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+  cursor: pointer;
+  position: relative;
+}
+.modern-send-btn:hover {
+  background: linear-gradient(90deg, #3182ce 60%, #38b2ac 100%);
+  box-shadow: 0 4px 24px #3182ce44;
+  transform: translateY(-2px) scale(1.03);
+}
+
+/* رسالة نجاح عصرية */
+.success-message-green.modern-success {
+  background: linear-gradient(90deg, #e6fffa 60%, #c6f6d5 100%);
+  color: #228b22;
+  border-radius: 14px;
+  padding: 18px 0 18px 0;
+  font-size: 1.15em;
+  font-weight: bold;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 2px 12px #38b2ac33;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.success-icon {
+  font-size: 1.5em;
+  margin-left: 8px;
+}
+
+/* Loader عصري للزر */
+.loader {
+  border: 3px solid #e3f2fd;
+  border-top: 3px solid #38b2ac;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

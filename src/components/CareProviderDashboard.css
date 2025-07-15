@@ -1,0 +1,122 @@
+.provider-dashboard {
+  min-height: 100vh;
+  background: #f3f8fd;
+  padding: 0;
+}
+.provider-dashboard header {
+  background: linear-gradient(90deg, #38b2ac, #3182ce);
+  color: #fff;
+  padding: 24px 18px 18px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.logout-btn {
+  background: #fff;
+  color: #3182ce;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-weight: bold;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.logout-btn:hover {
+  background: #e3fbe8;
+}
+.provider-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  justify-content: center;
+  margin-top: 38px;
+}
+.provider-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px #0001;
+  padding: 28px 22px;
+  min-width: 260px;
+  max-width: 340px;
+  flex: 1 1 320px;
+}
+.empty-state {
+  color: #aaa;
+  text-align: center;
+  margin-top: 18px;
+}
+.provider-profile {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px #0001;
+  padding: 18px 22px;
+  margin: 22px auto 0 auto;
+  max-width: 400px;
+  text-align: center;
+  color: #215175;
+  font-size: 1.13em;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.orders-list {
+  margin-top: 10px;
+}
+.order-item {
+  background: #f0f4fa;
+  border-radius: 8px;
+  padding: 8px 13px;
+  margin-bottom: 7px;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.order-item:hover {
+  background: #d1f6fc;
+}
+.order-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.order-popup {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px #0003;
+  padding: 28px 22px;
+  min-width: 320px;
+  max-width: 95vw;
+  text-align: right;
+  position: relative;
+}
+.accept-btn,
+.reject-btn {
+  padding: 9px 18px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1em;
+  cursor: pointer;
+}
+.accept-btn {
+  background: #38b2ac;
+  color: #fff;
+}
+.reject-btn {
+  background: #e53e3e;
+  color: #fff;
+}
+@media (max-width: 700px) {
+  .provider-content {
+    flex-direction: column;
+    align-items: center;
+  }
+}

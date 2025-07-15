@@ -1,0 +1,92 @@
+.track-main {
+  max-width: 720px;
+  margin: 30px auto 0 auto;
+  padding: 28px 0 12px 0;
+}
+.track-main h2 {
+  text-align: center;
+  color: #215175;
+  margin-bottom: 20px;
+}
+.track-status {
+  text-align: center;
+  background: linear-gradient(135deg, #38b2ac 10%, #3182ce 100%);
+  color: #169c50;
+  padding: 12px 0;
+  border-radius: 10px;
+  font-size: 1.14em;
+  margin-bottom: 22px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+.track-map {
+  margin: 0 auto;
+  max-width: 550px;
+}
+.order-prices-box {
+  margin: 1.2rem 0 1.5rem 0;
+  background: #f7f7fa;
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 1px 8px #0001;
+  font-size: 1.1rem;
+  color: #1976d2;
+}
+.main-price {
+  color: #43a047;
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+.suggested-price {
+  color: #f6ad55;
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+/* Popup عصري لوصول مقدم الخدمة */
+.arrival-popup-modern {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(90deg, #e6fffa 60%, #c6f6d5 100%);
+  color: #228b22;
+  border-radius: 16px;
+  padding: 28px 32px;
+  font-size: 1.13em;
+  font-weight: bold;
+  box-shadow: 0 6px 32px #38b2ac55;
+  z-index: 9999;
+  min-width: 320px;
+  max-width: 90vw;
+  text-align: center;
+  animation: popup-in 0.3s;
+}
+@keyframes popup-in {
+  0% { transform: translate(-50%, -60%) scale(0.9); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+.popup-title {
+  font-size: 1.25em;
+  margin-bottom: 12px;
+  color: #1976d2;
+}
+.popup-content {
+  margin-bottom: 18px;
+  color: #215175;
+  font-weight: normal;
+}
+.close-popup-btn {
+  background: #3182ce;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px #3182ce22;
+}
+.close-popup-btn:hover {
+  background: #38b2ac;
+}
