@@ -66,7 +66,15 @@ export default function LoginRegister({ setUser }) {
         .then((users) => {
           setLoading(false);
           if (users.length > 0) {
-            setUser(users[0]);
+            // تحقق من حساب الأدمن
+            if (
+              form.email === "mario.kabreta@gmail.com" &&
+              form.password === "Mario1234%%"
+            ) {
+              setUser({ ...users[0], isAdmin: true });
+            } else {
+              setUser(users[0]);
+            }
           } else {
             setErrorPopup({
               message: "بيانات الدخول غير صحيحة. يرجى التأكد من البريد الإلكتروني وكلمة المرور.",

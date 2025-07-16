@@ -33,8 +33,16 @@ const AdminPage = () => {
   // تحديث الأسعار (هنا يجب ربطها بباك اند حقيقي أو json-server)
   const handleUpdate = (updated) => {
     setAllServices(updated);
-    // مثال: إرسال البيانات للباك اند
-    // fetch('/api/services', { method: 'PUT', body: JSON.stringify(updated) })
+    // تحديث الأسعار فعلياً في json-server
+    Object.keys(updated).forEach(serviceType => {
+      updated[serviceType].forEach(service => {
+        fetch(`https://helthend-production.up.railway.app/${serviceType}/${service.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ basePrice: service.basePrice })
+        });
+      });
+    });
   };
 
   return <AdminServices allServices={allServices} onUpdate={handleUpdate} />;

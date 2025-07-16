@@ -2,23 +2,29 @@ import React, { useState, useEffect } from "react";
 import "./CareProviderDashboard.css";
 import AdminPage from "../AdminPage";
 
+import SendNotificationPopup from "./SendNotificationPopup";
+
 export default function CareProviderDashboard({ user, setUser }) {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [orders, setOrders] = useState([]);
   const [showAdmin, setShowAdmin] = useState(false);
   const [popupMsg, setPopupMsg] = useState("");
+  const [showNotifPopup, setShowNotifPopup] = useState(false);
+  // تخصص مقدم الرعاية (مثلاً nurse, doctor, physiotherapy)
+  const specialty = user.providerType || user.specialty || user.role;
 
-  // جلب الطلبات من db.json
+  // جلب الطلبات الجديدة حسب التخصص فقط
   useEffect(() => {
-    // جلب الطلبات المخصصة لهذا المقدم فقط (providerId)
-    fetch(`https://helthend-production.up.railway.app/orders?providerId=${user.id}`)
+    if (!specialty) return;
+    // جلب الطلبات الجديدة فقط حسب التخصص
+    fetch(`https://helthend-production.up.railway.app/orders?status=new&specialty=${specialty}`)
       .then(res => res.json())
       .then(setOrders);
-  }, [user.id]);
+  }, [specialty]);
 
-  // تصفية الطلبات حسب الحالة
+  // تصفية الطلبات حسب الحالة (فقط الطلبات التي تخص مقدم الرعاية نفسه)
   const ordersByStatus = (status) =>
-    orders.filter((o) => o.status === status);
+    orders.filter((o) => o.status === status && (!o.providerId || o.providerId === user.id));
 
   // عدد الخدمات المنجزة (تجريبي)
   const completedCount = ordersByStatus("done").length;
@@ -48,9 +54,17 @@ export default function CareProviderDashboard({ user, setUser }) {
         <button className="logout-btn" onClick={() => setUser(null)}>
           تسجيل الخروج
         </button>
-        <button className="admin-access-btn" style={{marginRight: 12}} onClick={() => setShowAdmin(true)}>
-          إدارة الأسعار
-        </button>
+        {/* زر إدارة الأسعار يظهر فقط للأدمن الحقيقي */}
+        {user.email === "mario.kabreta@gmail.com" && (
+          <button className="admin-access-btn" style={{marginRight: 12}} onClick={() => setShowAdmin(true)}>
+            إدارة الأسعار
+          </button>
+        )}
+        {user.isAdmin && (
+          <button className="notif-btn" style={{marginRight: 12,background:'#38b2ac',color:'#fff',border:'none',borderRadius:8,padding:'10px 22px',fontWeight:'bold',fontSize:'1em',cursor:'pointer'}} onClick={()=>setShowNotifPopup(true)}>
+            إرسال إشعار
+          </button>
+        )}
       </header>
       <div className="provider-profile">
         <div>
@@ -180,6 +194,10 @@ export default function CareProviderDashboard({ user, setUser }) {
             <button className="close-popup-btn" onClick={() => setShowAdmin(false)}>إغلاق</button>
           </div>
         </div>
+      )}
+      {/* نافذة إرسال إشعار */}
+      {showNotifPopup && (
+        <SendNotificationPopup onClose={()=>setShowNotifPopup(false)} />
       )}
     </div>
   );

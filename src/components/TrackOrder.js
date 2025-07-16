@@ -29,20 +29,23 @@ function TrackOrder({ user }) {
 
   useEffect(() => {
     if (!user) return;
+    let prevAccepted = [];
     fetch(`https://helthend-production.up.railway.app/orders?patientId=${user.id}`)
       .then(res => res.json())
       .then(newOrders => {
         // Check if any order status changed to accepted and show popup
-        const prevAccepted = orders.filter(o => o.status === 'accepted').map(o => o.id);
-        const newAccepted = newOrders.filter(o => o.status === 'accepted').filter(o => !prevAccepted.includes(o.id));
-        if (newAccepted.length > 0) {
-          setAcceptedProvider(newAccepted[0].providerName || "");
+        if (orders.length > 0) {
+          prevAccepted = orders.filter(o => o.status === 'accepted').map(o => o.id);
+        }
+        const justAccepted = newOrders.filter(o => o.status === 'accepted' && !prevAccepted.includes(o.id));
+        if (justAccepted.length > 0) {
+          setAcceptedProvider(justAccepted[0].providerName || "");
           setShowAcceptedPopup(true);
         }
         setOrders(newOrders);
       });
     // eslint-disable-next-line
-  }, [user]);
+  }, [user, orders]);
 
   if (!user) return null;
 

@@ -48,7 +48,18 @@ const AdminServices = ({ allServices, onUpdate }) => {
 
   const handleSave = () => {
     onUpdate(edited);
-    alert("تم حفظ الأسعار بنجاح!");
+    // تحديث الأسعار فعلياً في json-server
+    // لكل تخصص ولكل خدمة يتم إرسال PATCH
+    Object.keys(edited).forEach(serviceType => {
+      edited[serviceType].forEach(service => {
+        fetch(`https://helthend-production.up.railway.app/${serviceType}/${service.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ basePrice: service.basePrice })
+        });
+      });
+    });
+    alert("تم حفظ الأسعار وتحديثها بنجاح!");
   };
 
 
