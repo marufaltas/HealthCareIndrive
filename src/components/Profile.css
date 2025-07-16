@@ -1,3 +1,13 @@
+.modern-profile-card {
+  background: linear-gradient(135deg, #38b2ac 10%, #3182ce 100%);
+  border-radius: 18px;
+  box-shadow: 0 2px 12px #0002;
+  padding: 35px 44px 29px 44px;
+  min-width: 320px;
+  text-align: center;
+  color: #fff;
+  font-family: 'Cairo', 'Tajawal', Arial, sans-serif;
+}
 .profile-main {
   display: flex;
   justify-content: center;

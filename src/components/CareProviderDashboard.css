@@ -1,3 +1,43 @@
+/* عن المطور */
+.about-developer-card {
+  margin: 38px auto 0 auto;
+  max-width: 420px;
+  background: linear-gradient(135deg, #3182ce 10%, #38b2ac 100%);
+  border-radius: 18px;
+  box-shadow: 0 2px 12px #0002;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 28px;
+  color: #fff;
+  font-family: 'Cairo', 'Tajawal', Arial, sans-serif;
+}
+.about-dev-avatar img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #fff;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 6px #0001;
+}
+.about-dev-info h4 {
+  margin: 0 0 6px 0;
+  font-size: 1.18em;
+  font-weight: bold;
+  color: #fff;
+}
+.about-dev-info p {
+  margin: 0;
+  font-size: 1em;
+  color: #e3f6ff;
+  line-height: 1.7;
+}
+.about-dev-info a {
+  color: #fff;
+  text-decoration: underline;
+  font-weight: bold;
+}
 .provider-dashboard {
   min-height: 100vh;
   background: #f3f8fd;

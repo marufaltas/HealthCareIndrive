@@ -1,17 +1,107 @@
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=Cairo:wght@400;700;900&display=swap');
+
 .app-root {
   min-height: 100vh;
   background: linear-gradient(135deg, #38b2ac 10%, #94cbff 100%);
   font-family: 'Tajawal', 'Cairo', Arial, sans-serif;
+  transition: background 0.3s, color 0.3s;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Tajawal', 'Cairo', Arial, sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+
+.main-content, .main-layout, .profile-card, .provider-card, .order-popup, .order-pending-popup-card, .features-soon-card, .features-popup {
+  font-family: 'Tajawal', 'Cairo', Arial, sans-serif;
+}
+
+.app-root.dark {
+  background: linear-gradient(135deg, #232946 10%, #1a202c 100%);
+  color: #e3f6ff;
+}
+
+body[data-theme="dark"] {
+  background: #181c2a !important;
+  color: #e3f6ff !important;
+}
+
+/* الوضع الليلي لعناصر عامة */
+.dark .main-content, .dark .main-layout, .dark .profile-card, .dark .provider-card, .dark .order-popup, .dark .order-pending-popup-card {
+  background: #232946 !important;
+  color: #e3f6ff !important;
+  box-shadow: 0 2px 16px #0006 !important;
+}
+.dark .modern-input, .dark input, .dark textarea {
+  background: #232946 !important;
+  color: #e3f6ff !important;
+  border: 1px solid #3a4668 !important;
+}
+.dark .order-item, .dark .provider-profile, .dark .order-prices-box, .dark .order-pending-info {
+  background: #232946 !important;
+  color: #e3f6ff !important;
+}
+.dark .order-pending-loader {
+  border: 5px solid #232946;
+  border-top: 5px solid #38b2ac;
+}
+.dark .close-popup-btn {
+  background: #232946 !important;
+  color: #e3f6ff !important;
+  border: 1px solid #38b2ac;
+}
+.dark .close-popup-btn:hover {
+  background: #38b2ac !important;
+  color: #fff !important;
+}
+.theme-toggle-btn {
+  font-family: inherit;
 }
 
 .welcome-screen {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  background: #f7faff;
+  color: #215175;
+  font-size: 2.1em;
+  position: relative;
+  overflow: hidden;
+}
+.welcome-logo-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
   background: linear-gradient(135deg, #38b2ac 10%, #3182ce 100%);
-  color: #fff;
-  font-size: 2.4em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 16px #3182ce33;
+  border: 4px solid #fff;
+  z-index: 2;
+}
+.welcome-logo-circle img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: #fff;
+}
+.falling-icon {
+  position: absolute;
+  top: -40px;
+  pointer-events: none;
+  opacity: 0.85;
+  animation: fall-anim linear forwards;
+}
+@keyframes fall-anim {
+  0% { transform: translateY(0) scale(1); opacity: 0.9; }
+  80% { opacity: 1; }
+  100% { transform: translateY(90vh) scale(1.1); opacity: 0; }
 }
 
 .main-layout {

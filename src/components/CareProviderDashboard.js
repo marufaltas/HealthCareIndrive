@@ -154,5 +154,19 @@ export default function CareProviderDashboard({ user, setUser }) {
         </div>
       )}
     </div>
+    {/* عن المطور */}
+    <div className="about-developer-card">
+      <div className="about-dev-avatar">
+        <img src="/logo.png" alt="شعار المطور" />
+      </div>
+      <div className="about-dev-info">
+        <h4>عن المطور</h4>
+        <p>
+          تم تطوير هذا النظام بواسطة <b>محمد أحمد</b>.
+          <br />
+          لمتابعة التحديثات أو التواصل: <a href="mailto:dev@example.com">dev@example.com</a>
+        </p>
+      </div>
+    </div>
   );
 }

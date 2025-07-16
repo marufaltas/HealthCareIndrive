@@ -62,6 +62,9 @@ export default function LoginRegister({ setUser }) {
 
   return (
     <div className="login-register-bg">
+      <div className="login-logo-circle">
+        <img src="/wight.png" alt="شعار الموقع" />
+      </div>
       <div className="login-register-card">
         <h2>{isRegister ? "إنشاء حساب جديد" : "تسجيل الدخول"}</h2>
         <form onSubmit={handleSubmit} className="login-register-form">

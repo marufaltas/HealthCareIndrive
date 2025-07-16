@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
+import OrderPendingPopup from "./OrderPendingPopup";
+import FeaturesSoonCard from "./FeaturesSoonCard";
 import "./OrderNow.css";
 
 const providerTypes = [
   { key: "doctor", label: "طبيب", icon: "/doctor-icon.png", color: "#3182ce" },
   { key: "nurse", label: "ممرض", icon: "/nurse-icon.png", color: "#38b2ac" },
-  { key: "physio", label: "علاج طبيعي", icon: "/pharmacist-icon.png", color: "#f6ad55" },
-  { key: "lab", label: "تحاليل", icon: "/pharmacist-icon.png", color: "#f56565" },
-  { key: "xray", label: "أشعة", icon: "/pharmacist-icon.png", color: "#805ad5" },
+  { key: "physio", label: "علاج طبيعي", icon: "/physiotherapy.png", color: "#f6ad55" },
+  { key: "lab", label: "تحاليل", icon: "/lap-icon.png", color: "#f56565" },
+  { key: "xray", label: "أشعة", icon: "/physio-icon.png", color: "#805ad5" },
   { key: "pharmacist", label: "صيدلي", icon: "/pharmacist-icon.png", color: "#ecc94b" },
 ];
 
@@ -24,8 +26,8 @@ export default function OrderNow({ user }) {
   const [sending, setSending] = useState(false);
   // متغير لتحديد آخر عنصر مختار (لزر التالي العصري)
   const [lastSelectedIndex, setLastSelectedIndex] = useState(null);
-  // يجب أن يكون هنا وليس بعد الشروط
-  const [showSuccess, setShowSuccess] = useState(false);
+  // متغير لعرض Popup الانتظار بعد الإرسال
+  const [pendingOrder, setPendingOrder] = useState(null);
 
   // جلب التخصصات من db.json
   useEffect(() => {
@@ -107,11 +109,9 @@ export default function OrderNow({ user }) {
   function handleSubmit(e) {
     e.preventDefault();
     setSending(true);
-    // جلب مقدمي الخدمة المتاحين لهذا التخصص
     fetch(`https://helthend-production.up.railway.app/users?type=provider&providerType=${encodeURIComponent(selectedType.label)}`)
       .then(res => res.json())
       .then(providers => {
-        // اختر أول مقدم خدمة متاح (يمكنك تطوير المنطق لاحقاً)
         const provider = providers[0];
         const orderBody = {
           patientId: user.id,
@@ -133,17 +133,10 @@ export default function OrderNow({ user }) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(orderBody),
+        }).then(() => {
+          setSending(false);
+          setPendingOrder(orderBody);
         });
-      })
-      .then(() => {
-        setSending(false);
-        setShowSuccess(true);
-        setTimeout(() => {
-          setShowSuccess(false);
-          if (window && window.location) {
-            window.location.href = "/track-order";
-          }
-        }, 1500);
       });
   }
 
@@ -168,6 +161,7 @@ export default function OrderNow({ user }) {
             </div>
           ))}
         </div>
+        <FeaturesSoonCard />
       </div>
     );
   }
@@ -235,12 +229,6 @@ export default function OrderNow({ user }) {
   if (step === 3 && selectedType) {
     return (
       <>
-        {showSuccess && (
-          <div className="success-message-green modern-success">
-            <span className="success-icon">✔</span>
-            تم إرسال الطلب بنجاح! سيتم تحويلك لصفحة تتبع الطلب...
-          </div>
-        )}
         <form className="order-step" onSubmit={handleSubmit}>
           <h2>حدد موقعك</h2>
           <div className="location-row-modern">
@@ -269,6 +257,19 @@ export default function OrderNow({ user }) {
             {sending ? <span className="loader"></span> : <><span role="img" aria-label="إرسال">🚀</span> إرسال الطلب</>}
           </button>
         </form>
+        {pendingOrder && (
+          <OrderPendingPopup
+            order={pendingOrder}
+            onClose={() => {
+              setPendingOrder(null);
+              if (window && window.location) {
+                window.location.href = "/track-order";
+              }
+            }}
+            autoClose={true}
+            delay={5000}
+          />
+        )}
       </>
     );
   }

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { ThemeProvider, useTheme } from "./components/ThemeContext";
 import Navbar from "./components/Navbar";
+import FallingIcons from "./components/FallingIcons";
 import Profile from "./components/Profile";
 import OrderNow from "./components/OrderNow";
 import TrackOrder from "./components/TrackOrder";
@@ -11,7 +13,7 @@ import AdminServicesPage from "./AdminServicesPage";
 import "./App.css";
 
 
-export default function App() {
+function AppContent() {
   // حالة المصادقة مع حفظ الجلسة
   const [user, setUserState] = useState(() => {
     try {
@@ -34,7 +36,7 @@ export default function App() {
 
   useEffect(() => {
     if (showWelcome) {
-      const timer = setTimeout(() => setShowWelcome(false), 1200);
+      const timer = setTimeout(() => setShowWelcome(false), 4000);
       return () => clearTimeout(timer);
     }
   }, [showWelcome]);
@@ -51,15 +53,27 @@ export default function App() {
 
   // زر إدارة الأسعار يظهر فقط لمقدمي الرعاية
   const isProvider = user && user.type === "provider";
-
   // واجهة المريض
+  const { dark, setDark } = useTheme();
   return (
-    <div className="app-root">
+    <div className={"app-root" + (dark ? " dark" : "") }>
+      <button
+        className="theme-toggle-btn"
+        onClick={() => setDark(d => !d)}
+        style={{position:'fixed',top:18,left:18,zIndex:2000,background:dark?'#222':'#fff',color:dark?'#fff':'#222',border:'none',borderRadius:8,padding:'8px 18px',boxShadow:'0 2px 8px #0002',fontWeight:'bold',cursor:'pointer'}}
+        aria-label="تبديل الوضع الليلي"
+      >
+        {dark ? '☀️ وضع النهار' : '🌙 وضع الليل'}
+      </button>
       {showWelcome ? (
         <div className="welcome-screen">
-          <h1>
+          <div className="welcome-logo-circle">
+            <img src="/wight.png" alt="شعار الموقع" />
+          </div>
+          <h1 style={{fontWeight:900,marginTop:18,marginBottom:10,fontSize:'2.1em',color:'#215175',letterSpacing:'1px'}}>
             أهلاً بيك في <span style={{ color: "#38b2ac" }}>HealthCare InDrive</span> للرعاية الصحية
           </h1>
+          <FallingIcons />
         </div>
       ) : (
         <div className="main-layout">
@@ -96,5 +110,15 @@ export default function App() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
+  );
+}
   );
 }

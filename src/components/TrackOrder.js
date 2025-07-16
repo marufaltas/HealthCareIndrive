@@ -35,13 +35,30 @@ export default function TrackOrder({ user }) {
 
   if (selected) {
     const order = selected;
+    // تحديد نسبة التقدم بناءً على الحالة
+    let progress = 0;
+    let progressColor = '#3182ce';
+    let statusLabel = '';
+    if (order.status === 'new') { progress = 20; statusLabel = 'جديد'; progressColor = '#a0aec0'; }
+    else if (order.status === 'accepted') { progress = 60; statusLabel = 'مقبول'; progressColor = '#38b2ac'; }
+    else if (order.status === 'done') { progress = 100; statusLabel = 'تم الإنجاز'; progressColor = '#43a047'; }
+    else if (order.status === 'rejected') { progress = 100; statusLabel = 'مرفوض'; progressColor = '#e53e3e'; }
     return (
       <div style={{maxWidth:700,margin:"24px auto",background:'#fff',borderRadius:16,boxShadow:'0 2px 16px #3182ce22',padding:24}}>
         <h2 style={{color:'#3182ce'}}>تفاصيل الطلب</h2>
-        <div><b>الخدمات المطلوبة:</b> {order.serviceNames?.join(", ")}</div>
-        <div><b>السعر الأساسي:</b> {order.basePrice} ج.م</div>
-        <div><b>السعر المقترح:</b> {order.suggestedPrice || '-'} ج.م</div>
-        <div><b>مقدم الرعاية:</b> {order.providerName || '-'} ({order.providerPhone || '-'})</div>
+        <div style={{marginBottom:18}}>
+          <b>الخدمات المطلوبة:</b> {order.serviceNames?.join(", ")}
+        </div>
+        <div style={{marginBottom:8}}><b>السعر الأساسي:</b> {order.basePrice} ج.م</div>
+        <div style={{marginBottom:8}}><b>السعر المقترح:</b> {order.suggestedPrice || '-'} ج.م</div>
+        <div style={{marginBottom:8}}><b>مقدم الرعاية:</b> {order.providerName || '-'} ({order.providerPhone || '-'})</div>
+        <div style={{marginBottom:18}}>
+          <b>الحالة:</b> <span style={{color:progressColor,fontWeight:'bold'}}>{statusLabel}</span>
+        </div>
+        {/* Progress Bar */}
+        <div style={{background:'#e2e8f0',borderRadius:8,height:16,marginBottom:18,overflow:'hidden'}}>
+          <div style={{width:`${progress}%`,background:progressColor,height:'100%',transition:'width 0.5s'}}></div>
+        </div>
         <MapDistance patient={order.location} provider={order.providerLocation || {}} orderId={order.id} liveTrack={true} />
         <button style={{marginTop:16}} onClick={()=>setSelected(null)}>رجوع</button>
       </div>
@@ -51,20 +68,48 @@ export default function TrackOrder({ user }) {
   return (
     <div style={{maxWidth:700,margin:"24px auto"}}>
       <h2 style={{color:'#3182ce'}}>طلباتك الحالية</h2>
-      {orders.length === 0 && <div style={{color:'#888',fontSize:18,padding:24}}>لا توجد طلبات مسجلة لهذا الحساب حتى الآن.</div>}
+      {orders.length === 0 && (
+        <div style={{
+          color:'#fff',
+          fontSize:22,
+          padding:32,
+          background:'linear-gradient(135deg,#38b2ac 10%,#3182ce 100%)',
+          borderRadius:18,
+          textAlign:'center',
+          marginTop:60,
+          boxShadow:'0 2px 16px #3182ce33',
+          fontWeight:'bold',
+          letterSpacing:'1px'
+        }}>
+          لا توجد طلبات مسجلة لهذا الحساب حتى الآن.
+        </div>
+      )}
       {orders.length > 0 && (
         <>
-          {orders.map(order => (
-            <div key={order.id} style={{background:'#fff',borderRadius:12,boxShadow:'0 2px 8px #3182ce22',padding:16,marginBottom:16,display:'flex',justifyContent:'space-between',alignItems:'center',cursor:'pointer',border: order.status==="accepted"?"2px solid #38b2ac":order.status==="rejected"?"2px solid #e53e3e":"2px solid #e2e8f0"}} onClick={()=>setSelected(order)}>
-              <div>
-                <b>{order.serviceNames?.join(", ") || order.serviceName || "-"}</b>
-                <div style={{fontSize:13,color:'#666'}}>السعر: {order.basePrice} ج.م</div>
-                <div style={{fontSize:13,color:'#666'}}>مقدم الرعاية: {order.providerName || '-'}</div>
-                <div style={{fontSize:13,color:'#888'}}>الحالة: {order.status === "new" ? "جديد" : order.status === "accepted" ? "مقبول" : order.status === "rejected" ? "مرفوض" : order.status === "done" ? "تم الإنجاز" : order.status}</div>
+          {orders.map(order => {
+            let progress = 0;
+            let progressColor = '#3182ce';
+            let statusLabel = '';
+            if (order.status === 'new') { progress = 20; statusLabel = 'جديد'; progressColor = '#a0aec0'; }
+            else if (order.status === 'accepted') { progress = 60; statusLabel = 'مقبول'; progressColor = '#38b2ac'; }
+            else if (order.status === 'done') { progress = 100; statusLabel = 'تم الإنجاز'; progressColor = '#43a047'; }
+            else if (order.status === 'rejected') { progress = 100; statusLabel = 'مرفوض'; progressColor = '#e53e3e'; }
+            return (
+              <div key={order.id} style={{background:'#fff',borderRadius:12,boxShadow:'0 2px 8px #3182ce22',padding:16,marginBottom:16,display:'flex',justifyContent:'space-between',alignItems:'center',cursor:'pointer',border: order.status==="accepted"?"2px solid #38b2ac":order.status==="rejected"?"2px solid #e53e3e":"2px solid #e2e8f0"}} onClick={()=>setSelected(order)}>
+                <div style={{flex:1}}>
+                  <b>{order.serviceNames?.join(", ") || order.serviceName || "-"}</b>
+                  <div style={{fontSize:13,color:'#666'}}>السعر: {order.basePrice} ج.م</div>
+                  <div style={{fontSize:13,color:'#666'}}>مقدم الرعاية: {order.providerName || '-'}</div>
+                  <div style={{fontSize:13,color:progressColor,fontWeight:'bold'}}>الحالة: {statusLabel}</div>
+                  {/* Progress Bar */}
+                  <div style={{background:'#e2e8f0',borderRadius:8,height:10,marginTop:8,overflow:'hidden',maxWidth:220}}>
+                    <div style={{width:`${progress}%`,background:progressColor,height:'100%',transition:'width 0.5s'}}></div>
+                  </div>
+                </div>
+                <span style={{color:'#3182ce',fontWeight:700}}>تفاصيل &rarr;</span>
               </div>
-              <span style={{color:'#3182ce',fontWeight:700}}>تفاصيل &rarr;</span>
-            </div>
-          ))}
+            );
+          })}
         </>
       )}
     </div>
