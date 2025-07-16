@@ -29,15 +29,14 @@ function TrackOrder({ user }) {
 
   useEffect(() => {
     if (!user) return;
-    let prevAccepted = [];
+    // جلب الطلبات الحالية للمريض
     fetch(`https://helthend-production.up.railway.app/orders?patientId=${user.id}`)
       .then(res => res.json())
       .then(newOrders => {
-        // Check if any order status changed to accepted and show popup
-        if (orders.length > 0) {
-          prevAccepted = orders.filter(o => o.status === 'accepted').map(o => o.id);
-        }
-        const justAccepted = newOrders.filter(o => o.status === 'accepted' && !prevAccepted.includes(o.id));
+        // مقارنة الطلبات السابقة والجديدة
+        const prevAcceptedIds = orders.filter(o => o.status === 'accepted').map(o => o.id);
+        // ابحث عن طلب جديد تم قبوله الآن ولم يكن مقبولاً سابقاً
+        const justAccepted = newOrders.filter(o => o.status === 'accepted' && !prevAcceptedIds.includes(o.id));
         if (justAccepted.length > 0) {
           setAcceptedProvider(justAccepted[0].providerName || "");
           setShowAcceptedPopup(true);

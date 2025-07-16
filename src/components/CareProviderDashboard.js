@@ -10,21 +10,28 @@ export default function CareProviderDashboard({ user, setUser }) {
   const [showAdmin, setShowAdmin] = useState(false);
   const [popupMsg, setPopupMsg] = useState("");
   const [showNotifPopup, setShowNotifPopup] = useState(false);
-  // تخصص مقدم الرعاية (مثلاً nurse, doctor, physiotherapy)
-  const specialty = user.providerType || user.specialty || user.role;
 
-  // جلب الطلبات الجديدة حسب التخصص فقط
+  // جلب الطلبات الجديدة حسب التخصص فقط (تظهر لكل مقدم رعاية من نفس التخصص)
   useEffect(() => {
+    if (!user) return;
+    const specialty = user.providerType || user.specialty || user.role;
     if (!specialty) return;
-    // جلب الطلبات الجديدة فقط حسب التخصص
+    // جلب جميع الطلبات الجديدة لهذا التخصص
     fetch(`https://helthend-production.up.railway.app/orders?status=new&specialty=${specialty}`)
       .then(res => res.json())
       .then(setOrders);
-  }, [specialty]);
+  }, [user]);
 
-  // تصفية الطلبات حسب الحالة (فقط الطلبات التي تخص مقدم الرعاية نفسه)
-  const ordersByStatus = (status) =>
-    orders.filter((o) => o.status === status && (!o.providerId || o.providerId === user.id));
+  // تصفية الطلبات حسب الحالة:
+  // الطلبات الجديدة: تظهر لكل مقدم رعاية من نفس التخصص
+  // الطلبات المقبولة/منجزة/مرفوضة: تظهر فقط إذا كانت تخص مقدم الرعاية الحالي
+  const ordersByStatus = (status) => {
+    if (status === "new") {
+      return orders.filter(o => o.status === "new");
+    } else {
+      return orders.filter(o => o.status === status && o.providerId === user.id);
+    }
+  };
 
   // عدد الخدمات المنجزة (تجريبي)
   const completedCount = ordersByStatus("done").length;
