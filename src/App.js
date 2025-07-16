@@ -58,7 +58,7 @@ export default function App() {
       {showWelcome ? (
         <div className="welcome-screen">
           <h1>
-            أهلاً بيك في <span style={{ color: "#38b2ac" }}>MarioSNurse</span> للرعاية الصحية
+            أهلاً بيك في <span style={{ color: "#38b2ac" }}>HealthCare InDrive</span> للرعاية الصحية
           </h1>
         </div>
       ) : (
