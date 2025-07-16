@@ -28,7 +28,7 @@ export default function Settings({ setUser, user }) {
     e.preventDefault();
     setSaving(true);
     // تحديث البيانات في قاعدة البيانات (يفترض وجود endpoint مناسب)
-    fetch(`http://localhost:5000/users/${user.id}`, {
+    fetch(`https://helthend-production.up.railway.app/users/${user.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ address: editData.address, age: editData.age }),

@@ -26,7 +26,7 @@ export default function TrackOrder({ user }) {
 
   useEffect(() => {
     if (!user) return;
-    fetch(`http://localhost:5000/orders?patientId=${user.id}`)
+    fetch(`https://helthend-production.up.railway.app/orders?patientId=${user.id}`)
       .then(res => res.json())
       .then(setOrders);
   }, [user]);

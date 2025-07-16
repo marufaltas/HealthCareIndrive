@@ -17,7 +17,7 @@ const AdminPage = () => {
     ];
     Promise.all(
       serviceKeys.map(key =>
-        fetch(`http://localhost:5000/${key}`)
+        fetch(`https://helthend-production.up.railway.app/${key}`)
           .then(res => res.ok ? res.json() : [])
           .catch(() => [])
       )

@@ -30,7 +30,7 @@ export default function OrderNow({ user }) {
   // جلب التخصصات من db.json
   useEffect(() => {
     if (selectedType) {
-      fetch(`http://localhost:5000/services?providerType=${selectedType.key}`)
+      fetch(`https://helthend-production.up.railway.app/services?providerType=${selectedType.key}`)
         .then(res => res.json())
         .then(data => {
           // استخرج التخصصات الفريدة
@@ -51,7 +51,7 @@ export default function OrderNow({ user }) {
       else if (selectedType.key === "lab") endpoint = "/labServices";
       else if (selectedType.key === "xray") endpoint = "/xrayServices";
       if (endpoint) {
-        fetch(`http://localhost:5000${endpoint}`)
+        fetch(`https://helthend-production.up.railway.app${endpoint}`)
           .then(res => res.json())
           .then(data => setServices(data || []));
       } else {
@@ -108,7 +108,7 @@ export default function OrderNow({ user }) {
     e.preventDefault();
     setSending(true);
     // جلب مقدمي الخدمة المتاحين لهذا التخصص
-    fetch(`http://localhost:5000/users?type=provider&providerType=${encodeURIComponent(selectedType.label)}`)
+    fetch(`https://helthend-production.up.railway.app/users?type=provider&providerType=${encodeURIComponent(selectedType.label)}`)
       .then(res => res.json())
       .then(providers => {
         // اختر أول مقدم خدمة متاح (يمكنك تطوير المنطق لاحقاً)
@@ -129,7 +129,7 @@ export default function OrderNow({ user }) {
           patientName: user.fullName,
           address: location.address
         };
-        return fetch("http://localhost:5000/orders", {
+        return fetch("https://helthend-production.up.railway.app/orders", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(orderBody),

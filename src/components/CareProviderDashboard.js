@@ -11,7 +11,7 @@ export default function CareProviderDashboard({ user, setUser }) {
   // جلب الطلبات من db.json
   useEffect(() => {
     // جلب الطلبات المخصصة لهذا المقدم فقط (providerId)
-    fetch(`http://localhost:5000/orders?providerId=${user.id}`)
+    fetch(`https://helthend-production.up.railway.app/orders?providerId=${user.id}`)
       .then(res => res.json())
       .then(setOrders);
   }, [user.id]);
@@ -28,7 +28,7 @@ export default function CareProviderDashboard({ user, setUser }) {
     const order = orders.find(o => o.id === orderId);
     if (!order) return;
     // تحديث الطلب في قاعدة البيانات
-    fetch(`http://localhost:5000/orders/${orderId}`, {
+    fetch(`https://helthend-production.up.railway.app/orders/${orderId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: action === "accept" ? "accepted" : "rejected" })

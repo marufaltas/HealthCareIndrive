@@ -33,7 +33,7 @@ export default function LoginRegister({ setUser }) {
 
     if (isRegister) {
       // تسجيل مستخدم جديد
-      fetch("http://localhost:5000/users", {
+      fetch("https://helthend-production.up.railway.app/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -46,7 +46,7 @@ export default function LoginRegister({ setUser }) {
     } else {
       // تسجيل دخول: تحقق من البريد وكلمة المرور
       fetch(
-        `http://localhost:5000/users?email=${form.email}&password=${form.password}`
+        `https://helthend-production.up.railway.app/users?email=${form.email}&password=${form.password}`
       )
         .then((res) => res.json())
         .then((users) => {

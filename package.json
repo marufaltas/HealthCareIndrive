@@ -17,6 +17,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "start:api": "json-server --watch db.json --port 5000"
+    ,"postinstall": "chmod +x node_modules/.bin/react-scripts || true"
   },
   "browserslist": {
     "production": [

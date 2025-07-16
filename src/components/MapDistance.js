@@ -37,7 +37,7 @@ export default function MapDistance({ patient, provider, orderId, liveTrack }) {
   useEffect(() => {
     if (!liveTrack || !orderId) return;
     const interval = setInterval(() => {
-      fetch(`http://localhost:5000/orders/${orderId}`)
+      fetch(`https://helthend-production.up.railway.app/orders/${orderId}`)
         .then(res => res.json())
         .then(order => {
           if (order.location?.lat && order.location?.lng) setPatientPos([parseFloat(order.location.lat), parseFloat(order.location.lng)]);
