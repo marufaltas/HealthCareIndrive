@@ -22,9 +22,13 @@
 }
 .login-logo-circle-main {
   margin-top: 0;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   box-shadow: 0 4px 32px #3182ce44;
   border-width: 5px;
+  width: 160px;
+  height: 160px;
+}
+.login-logo-circle-main img {
   width: 120px;
   height: 120px;
 }

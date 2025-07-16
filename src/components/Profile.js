@@ -5,8 +5,8 @@ export default function Profile({ user }) {
   // عرض بيانات المريض الفعلية
   if (!user) return null;
   return (
-    <div className="profile-main">
-      <div className="profile-card modern-profile-card">
+    <div className="profile-main" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',minHeight:'80vh'}}>
+      <div className="profile-card modern-profile-card" style={{margin:'0 auto'}}>
         <img src="/user-placeholder.png" alt="صورة المستخدم" className="profile-img" />
         <h3>{user.fullName}</h3>
         <p className="profile-role">{user.type === "patient" ? "مريض" : user.type === "provider" ? user.providerType : "مستخدم"}</p>
@@ -19,15 +19,15 @@ export default function Profile({ user }) {
         </div>
       </div>
       {/* عن المطور */}
-      <div className="about-developer-card" style={{marginTop: 32}}>
+      <div className="about-developer-card" style={{marginTop: 40, marginBottom: 10, textAlign:'center'}}>
         <div className="about-dev-avatar">
           <img src="/logo.png" alt="شعار المطور" />
         </div>
         <div className="about-dev-info">
           <h4>عن المطور</h4>
           <p>
-            تم تطوير هذا النظام بواسطة <b>محمد أحمد</b>.<br />
-            لمتابعة التحديثات أو التواصل: <a href="mailto:dev@example.com">dev@example.com</a>
+            تم تطوير هذا النظام بواسطة <b>ماريو فلتس شوقي</b>.<br />
+            للتواصل: <a href="tel:01069663958">01069663958</a>
           </p>
         </div>
       </div>

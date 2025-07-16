@@ -16,9 +16,17 @@ export default function CareProviderDashboard({ user, setUser }) {
       .then(setOrders);
   }, [user.id]);
 
-  // تصفية الطلبات حسب الحالة
+  // تصفية الطلبات حسب الحالة والتخصص
   const ordersByStatus = (status) =>
-    orders.filter((o) => o.status === status);
+    orders.filter((o) =>
+      o.status === status &&
+      (
+        !user.providerType ||
+        (Array.isArray(o.serviceNames)
+          ? o.serviceNames.some(service => service && service.includes(user.providerType))
+          : (o.service || '').includes(user.providerType))
+      )
+    );
 
   // عدد الخدمات المنجزة (تجريبي)
   const completedCount = ordersByStatus("done").length;
@@ -154,19 +162,6 @@ export default function CareProviderDashboard({ user, setUser }) {
         </div>
       )}
     </div>
-    {/* عن المطور */}
-    <div className="about-developer-card">
-      <div className="about-dev-avatar">
-        <img src="/logo.png" alt="شعار المطور" />
-      </div>
-      <div className="about-dev-info">
-        <h4>عن المطور</h4>
-        <p>
-          تم تطوير هذا النظام بواسطة <b>محمد أحمد</b>.
-          <br />
-          لمتابعة التحديثات أو التواصل: <a href="mailto:dev@example.com">dev@example.com</a>
-        </p>
-      </div>
-    </div>
   );
 }
+// عن المطور: تم نقل الكارد ليكون داخل عنصر React الرئيسي فقط
