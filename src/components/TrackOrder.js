@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import MapDistance from "./MapDistance";
+import ProviderAcceptedPopup from "./ProviderAcceptedPopup";
 import "./TrackOrder.css";
 
 // دالة لحساب الوقت المقدر للوصول (بناءً على المسافة)
@@ -20,18 +21,34 @@ function estimateArrivalTime(lat1, lng1, lat2, lng2) {
   return Math.round(time);
 }
 
-export default function TrackOrder({ user }) {
+function TrackOrder({ user }) {
   const [orders, setOrders] = useState([]);
   const [selected, setSelected] = useState(null);
+  const [showAcceptedPopup, setShowAcceptedPopup] = useState(false);
+  const [acceptedProvider, setAcceptedProvider] = useState("");
 
   useEffect(() => {
     if (!user) return;
     fetch(`https://helthend-production.up.railway.app/orders?patientId=${user.id}`)
       .then(res => res.json())
-      .then(setOrders);
+      .then(newOrders => {
+        // Check if any order status changed to accepted and show popup
+        const prevAccepted = orders.filter(o => o.status === 'accepted').map(o => o.id);
+        const newAccepted = newOrders.filter(o => o.status === 'accepted').filter(o => !prevAccepted.includes(o.id));
+        if (newAccepted.length > 0) {
+          setAcceptedProvider(newAccepted[0].providerName || "");
+          setShowAcceptedPopup(true);
+        }
+        setOrders(newOrders);
+      });
+    // eslint-disable-next-line
   }, [user]);
 
   if (!user) return null;
+
+  if (showAcceptedPopup) {
+    return <ProviderAcceptedPopup providerName={acceptedProvider} onClose={() => setShowAcceptedPopup(false)} />;
+  }
 
   if (selected) {
     const order = selected;
@@ -51,7 +68,7 @@ export default function TrackOrder({ user }) {
         </div>
         <div style={{marginBottom:8}}><b>السعر الأساسي:</b> {order.basePrice} ج.م</div>
         <div style={{marginBottom:8}}><b>السعر المقترح:</b> {order.suggestedPrice || '-'} ج.م</div>
-        <div style={{marginBottom:8}}><b>مقدم الرعاية:</b> {order.providerName || '-'} ({order.providerPhone || '-'})</div>
+        <div style={{marginBottom:8}}><b>مقدم الرعاية:</b> {(order.status === 'accepted' || order.status === 'done') ? (order.providerName || '-') : '-'} {(order.status === 'accepted' || order.status === 'done') ? `(${order.providerPhone || '-'})` : ''}</div>
         <div style={{marginBottom:18}}>
           <b>الحالة:</b> <span style={{color:progressColor,fontWeight:'bold'}}>{statusLabel}</span>
         </div>
@@ -60,7 +77,24 @@ export default function TrackOrder({ user }) {
           <div style={{width:`${progress}%`,background:progressColor,height:'100%',transition:'width 0.5s'}}></div>
         </div>
         <MapDistance patient={order.location} provider={order.providerLocation || {}} orderId={order.id} liveTrack={true} />
-        <button style={{marginTop:16}} onClick={()=>setSelected(null)}>رجوع</button>
+        {(order.status === 'accepted') && (
+          <button
+            style={{marginTop:16,background:'#43a047',color:'#fff',padding:'12px 32px',border:'none',borderRadius:8,fontWeight:'bold',fontSize:'1.1em',cursor:'pointer'}}
+            onClick={async ()=>{
+              await fetch(`https://helthend-production.up.railway.app/orders/${order.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'done' })
+              });
+              setSelected(null);
+              // تحديث الطلبات بعد الإنهاء
+              fetch(`https://helthend-production.up.railway.app/orders?patientId=${user.id}`)
+                .then(res => res.json())
+                .then(setOrders);
+            }}
+          >اتمام الطلب بنجاح</button>
+        )}
+        <button style={{marginTop:16,marginRight:8}} onClick={()=>setSelected(null)}>رجوع</button>
       </div>
     );
   }
@@ -99,7 +133,7 @@ export default function TrackOrder({ user }) {
                 <div style={{flex:1}}>
                   <b>{order.serviceNames?.join(", ") || order.serviceName || "-"}</b>
                   <div style={{fontSize:13,color:'#666'}}>السعر: {order.basePrice} ج.م</div>
-                  <div style={{fontSize:13,color:'#666'}}>مقدم الرعاية: {order.providerName || '-'}</div>
+                  <div style={{fontSize:13,color:'#666'}}>مقدم الرعاية: {(order.status === 'accepted' || order.status === 'done') ? (order.providerName || '-') : '-'}</div>
                   <div style={{fontSize:13,color:progressColor,fontWeight:'bold'}}>الحالة: {statusLabel}</div>
                   {/* Progress Bar */}
                   <div style={{background:'#e2e8f0',borderRadius:8,height:10,marginTop:8,overflow:'hidden',maxWidth:220}}>
@@ -115,3 +149,4 @@ export default function TrackOrder({ user }) {
     </div>
   );
 }
+export default TrackOrder;

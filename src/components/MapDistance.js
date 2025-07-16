@@ -47,10 +47,13 @@ export default function MapDistance({ patient, provider, orderId, liveTrack }) {
     return () => clearInterval(interval);
   }, [liveTrack, orderId]);
 
-  if (!patientPos[0] || !patientPos[1] || !providerPos[0] || !providerPos[1]) return <div>لا توجد بيانات إحداثيات كافية</div>;
-  const distance = haversine(patientPos[0], patientPos[1], providerPos[0], providerPos[1]);
-  const estTime = Math.round((distance / 0.5) + 10); // 0.5 كم/دقيقة = 30 كم/س
-  const cost = Math.round(distance * 5);
+  if (!patientPos[0] || !patientPos[1]) return <div>لا توجد بيانات إحداثيات كافية</div>;
+  let distance = null, estTime = null, cost = null;
+  if (providerPos[0] && providerPos[1]) {
+    distance = haversine(patientPos[0], patientPos[1], providerPos[0], providerPos[1]);
+    estTime = Math.round((distance / 0.5) + 10); // 0.5 كم/دقيقة = 30 كم/س
+    cost = Math.round(distance * 5);
+  }
   return (
     <div style={{width:'100%',height:350,margin:'16px 0',borderRadius:12,overflow:'hidden',boxShadow:'0 2px 12px #3182ce22'}}>
       <MapContainer center={patientPos} zoom={13} style={{height:350,width:'100%'}} scrollWheelZoom={true}>
@@ -58,15 +61,19 @@ export default function MapDistance({ patient, provider, orderId, liveTrack }) {
         <Marker position={patientPos} icon={patientIcon}>
           <Popup>موقع المريض</Popup>
         </Marker>
-        <Marker position={providerPos} icon={providerIcon}>
-          <Popup>موقع مقدم الرعاية</Popup>
-        </Marker>
-        <Polyline positions={[providerPos, patientPos]} color="#3182ce" />
+        {providerPos[0] && providerPos[1] && (
+          <Marker position={providerPos} icon={providerIcon}>
+            <Popup>موقع مقدم الرعاية</Popup>
+          </Marker>
+        )}
+        {providerPos[0] && providerPos[1] && (
+          <Polyline positions={[providerPos, patientPos]} color="#3182ce" />
+        )}
       </MapContainer>
       <div style={{padding:8,background:'#fff',borderRadius:'0 0 12px 12px',boxShadow:'0 2px 8px #0001',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-        <span>المسافة: <b>{distance.toFixed(2)} كم</b></span>
-        <span>الوقت المتوقع: <b>{estTime} دقيقة</b></span>
-        <span>تكلفة الوصول: <b>{cost} ج.م</b></span>
+        <span>المسافة: <b>{distance ? distance.toFixed(2) : '-'} كم</b></span>
+        <span>الوقت المتوقع: <b>{estTime || '-'} دقيقة</b></span>
+        <span>تكلفة الوصول: <b>{cost || '-'} ج.م</b></span>
       </div>
     </div>
   );

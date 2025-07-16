@@ -260,14 +260,9 @@ export default function OrderNow({ user }) {
         {pendingOrder && (
           <OrderPendingPopup
             order={pendingOrder}
-            onClose={() => {
-              setPendingOrder(null);
-              if (window && window.location) {
-                window.location.href = "/track-order";
-              }
-            }}
+            onClose={() => setPendingOrder(null)}
             autoClose={true}
-            delay={5000}
+            delay={9000}
           />
         )}
       </>

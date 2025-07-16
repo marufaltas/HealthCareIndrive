@@ -16,17 +16,9 @@ export default function CareProviderDashboard({ user, setUser }) {
       .then(setOrders);
   }, [user.id]);
 
-  // تصفية الطلبات حسب الحالة والتخصص
+  // تصفية الطلبات حسب الحالة
   const ordersByStatus = (status) =>
-    orders.filter((o) =>
-      o.status === status &&
-      (
-        !user.providerType ||
-        (Array.isArray(o.serviceNames)
-          ? o.serviceNames.some(service => service && service.includes(user.providerType))
-          : (o.service || '').includes(user.providerType))
-      )
-    );
+    orders.filter((o) => o.status === status);
 
   // عدد الخدمات المنجزة (تجريبي)
   const completedCount = ordersByStatus("done").length;
@@ -138,12 +130,40 @@ export default function CareProviderDashboard({ user, setUser }) {
                 src={`https://maps.google.com/maps?q=${selectedOrder.location.lat},${selectedOrder.location.lng}&z=15&output=embed`}
                 allowFullScreen
               ></iframe>
+              <button
+                style={{marginTop:10,background:'#3182ce',color:'#fff',padding:'8px 18px',border:'none',borderRadius:8,fontWeight:'bold',fontSize:'1em',cursor:'pointer'}}
+                onClick={() => {
+                  if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(async pos => {
+                      const lat = pos.coords.latitude;
+                      const lng = pos.coords.longitude;
+                      // حفظ موقع مقدم الرعاية في الطلب
+                      await fetch(`https://helthend-production.up.railway.app/orders/${selectedOrder.id}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ providerLocation: { lat, lng } })
+                      });
+                      alert('تم مشاركة موقعك بنجاح!');
+                    }, err => {
+                      alert('تعذر تحديد موقعك. يرجى السماح بالوصول للموقع.');
+                    });
+                  } else {
+                    alert('المتصفح لا يدعم تحديد الموقع الجغرافي.');
+                  }
+                }}
+              >مشاركة موقعي الحالي</button>
             </div>
             <div style={{display: "flex", gap: 10, marginTop: 10}}>
               {selectedOrder.status === "new" && <>
                 <button className="accept-btn" onClick={() => handleOrderAction(selectedOrder.id, "accept")}>قبول الطلب</button>
                 <button className="reject-btn" onClick={() => handleOrderAction(selectedOrder.id, "reject")}>رفض الطلب</button>
               </>}
+              {selectedOrder.status === "accepted" && (
+                <span style={{color:'#43a047',fontWeight:'bold',fontSize:'1.1em'}}>في انتظار إتمام الخدمة من المريض</span>
+              )}
+              {selectedOrder.status === "done" && (
+                <span style={{color:'#43a047',fontWeight:'bold',fontSize:'1.1em'}}>تم تنفيذ الطلب بنجاح</span>
+              )}
             </div>
           </div>
         </div>
