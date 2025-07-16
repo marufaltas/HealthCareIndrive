@@ -109,35 +109,28 @@ export default function OrderNow({ user }) {
   function handleSubmit(e) {
     e.preventDefault();
     setSending(true);
-    fetch(`https://helthend-production.up.railway.app/users?type=provider&providerType=${encodeURIComponent(selectedType.label)}`)
-      .then(res => res.json())
-      .then(providers => {
-        const provider = providers[0];
-        const orderBody = {
-          patientId: user.id,
-          providerType: selectedType.key,
-          specialty: selectedSpecialty,
-          serviceNames: selectedServices,
-          location,
-          basePrice,
-          suggestedPrice,
-          status: "new",
-          createdAt: new Date().toISOString(),
-          providerId: provider ? provider.id : null,
-          providerName: provider ? provider.fullName : null,
-          providerPhone: provider ? provider.phone : null,
-          patientName: user.fullName,
-          address: location.address
-        };
-        return fetch("https://helthend-production.up.railway.app/orders", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(orderBody),
-        }).then(() => {
-          setSending(false);
-          setPendingOrder(orderBody);
-        });
-      });
+    // الطلب الجديد لا يحتوي على مقدم رعاية، فقط تخصص الخدمة
+    const orderBody = {
+      patientId: user.id,
+      providerType: selectedType.key,
+      specialty: selectedSpecialty,
+      serviceNames: selectedServices,
+      location,
+      basePrice,
+      suggestedPrice,
+      status: "new",
+      createdAt: new Date().toISOString(),
+      patientName: user.fullName,
+      address: location.address
+    };
+    fetch("https://helthend-production.up.railway.app/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(orderBody),
+    }).then(() => {
+      setSending(false);
+      setPendingOrder(orderBody);
+    });
   }
 
   // واجهة اختيار التخصص أو الخدمة

@@ -23,7 +23,7 @@
       "email": "mari111@gmail.com",
       "password": "1234",
       "type": "provider",
-      "providerType": "ممرض",
+      "providerType": "nurse",
       "idCard": {},
       "degree": {},
       "license": {}
@@ -37,7 +37,7 @@
       "email": "mari112@gmail.com",
       "password": "1234",
       "type": "provider",
-      "providerType": "ممرض",
+      "providerType": "nurse",
       "idCard": {},
       "degree": {},
       "license": {}

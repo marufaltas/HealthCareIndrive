@@ -26,6 +26,8 @@ function TrackOrder({ user }) {
   const [selected, setSelected] = useState(null);
   const [showAcceptedPopup, setShowAcceptedPopup] = useState(false);
   const [acceptedProvider, setAcceptedProvider] = useState("");
+  // حفظ معرفات الطلبات التي تم إظهار إشعار القبول لها
+  const [shownAcceptedIds, setShownAcceptedIds] = useState([]);
 
   useEffect(() => {
     if (!user) return;
@@ -33,18 +35,17 @@ function TrackOrder({ user }) {
     fetch(`https://helthend-production.up.railway.app/orders?patientId=${user.id}`)
       .then(res => res.json())
       .then(newOrders => {
-        // مقارنة الطلبات السابقة والجديدة
-        const prevAcceptedIds = orders.filter(o => o.status === 'accepted').map(o => o.id);
-        // ابحث عن طلب جديد تم قبوله الآن ولم يكن مقبولاً سابقاً
-        const justAccepted = newOrders.filter(o => o.status === 'accepted' && !prevAcceptedIds.includes(o.id));
+        // ابحث عن طلب جديد تم قبوله الآن ولم يظهر إشعاره من قبل
+        const justAccepted = newOrders.filter(o => o.status === 'accepted' && o.providerId && !shownAcceptedIds.includes(o.id));
         if (justAccepted.length > 0) {
           setAcceptedProvider(justAccepted[0].providerName || "");
           setShowAcceptedPopup(true);
+          setShownAcceptedIds(prev => [...prev, justAccepted[0].id]);
         }
         setOrders(newOrders);
       });
     // eslint-disable-next-line
-  }, [user, orders]);
+  }, [user, shownAcceptedIds]);
 
   if (!user) return null;
 

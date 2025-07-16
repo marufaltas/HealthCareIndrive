@@ -11,15 +11,24 @@ export default function CareProviderDashboard({ user, setUser }) {
   const [popupMsg, setPopupMsg] = useState("");
   const [showNotifPopup, setShowNotifPopup] = useState(false);
 
-  // جلب الطلبات الجديدة حسب التخصص فقط (تظهر لكل مقدم رعاية من نفس التخصص)
+  // جلب جميع الطلبات المرتبطة بالتخصص الحالي (new) + الطلبات المرتبطة بمقدم الرعاية نفسه (accepted/done/rejected)
   useEffect(() => {
     if (!user) return;
     const specialty = user.providerType || user.specialty || user.role;
     if (!specialty) return;
-    // جلب جميع الطلبات الجديدة لهذا التخصص
+    // جلب الطلبات الجديدة لهذا التخصص
     fetch(`https://helthend-production.up.railway.app/orders?status=new&specialty=${specialty}`)
       .then(res => res.json())
-      .then(setOrders);
+      .then(newOrders => {
+        // جلب الطلبات المرتبطة بمقدم الرعاية نفسه (مقبولة/منجزة/مرفوضة)
+        fetch(`https://helthend-production.up.railway.app/orders?providerId=${user.id}`)
+          .then(res => res.json())
+          .then(myOrders => {
+            // دمج الطلبات بدون تكرار
+            const allOrders = [...newOrders, ...myOrders.filter(o => !newOrders.some(n => n.id === o.id))];
+            setOrders(allOrders);
+          });
+      });
   }, [user]);
 
   // تصفية الطلبات حسب الحالة:
@@ -27,8 +36,10 @@ export default function CareProviderDashboard({ user, setUser }) {
   // الطلبات المقبولة/منجزة/مرفوضة: تظهر فقط إذا كانت تخص مقدم الرعاية الحالي
   const ordersByStatus = (status) => {
     if (status === "new") {
+      // الطلبات الجديدة تظهر لكل مقدم رعاية من نفس التخصص فقط إذا لم يتم قبولها
       return orders.filter(o => o.status === "new");
     } else {
+      // الطلبات المقبولة/منجزة/مرفوضة تظهر فقط إذا كانت تخص مقدم الرعاية الحالي
       return orders.filter(o => o.status === status && o.providerId === user.id);
     }
   };
@@ -40,40 +51,56 @@ export default function CareProviderDashboard({ user, setUser }) {
   function handleOrderAction(orderId, action) {
     const order = orders.find(o => o.id === orderId);
     if (!order) return;
-    // تحديث الطلب في قاعدة البيانات
+    // عند قبول الطلب، اربطه بمقدم الرعاية
+    let patchBody = {};
+    if (action === "accept") {
+      patchBody = {
+        status: "accepted",
+        providerId: user.id,
+        providerName: user.fullName || user.name,
+        providerPhone: user.phone || ""
+      };
+    } else {
+      patchBody = { status: "rejected" };
+    }
     fetch(`https://helthend-production.up.railway.app/orders/${orderId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: action === "accept" ? "accepted" : "rejected" })
+      body: JSON.stringify(patchBody)
     })
       .then(() => {
-        setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: action === "accept" ? "accepted" : "rejected" } : o));
+        setOrders(prev => prev.map(o => o.id === orderId ? { ...o, ...patchBody } : o));
         setSelectedOrder(null);
         setPopupMsg(action === "accept" ? `تم قبول طلب ${order.patientName} بنجاح` : `تم رفض طلب ${order.patientName}`);
-        setTimeout(() => setPopupMsg(""), 2000);
+        setTimeout(() => setPopupMsg("") , 2000);
       });
   }
 
   return (
     <div className="provider-dashboard">
-      <header>
-        <h2>مرحباً {user.fullName || user.name} 👋</h2>
-        <button className="logout-btn" onClick={() => setUser(null)}>
+      <header style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',marginBottom:16}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8}}>
+          <h2 style={{fontSize:'1.4em',fontWeight:'bold',margin:0,textAlign:'center'}}>مرحباً</h2>
+          <span style={{fontSize:'1.4em',fontWeight:'bold',margin:0,textAlign:'center'}}>{user.fullName || user.name} 👋</span>
+        </div>
+        <button className="logout-btn" style={{marginTop:10}} onClick={() => setUser(null)}>
           تسجيل الخروج
         </button>
-        {/* زر إدارة الأسعار يظهر فقط للأدمن الحقيقي */}
-        {user.email === "mario.kabreta@gmail.com" && (
-          <button className="admin-access-btn" style={{marginRight: 12}} onClick={() => setShowAdmin(true)}>
-            إدارة الأسعار
-          </button>
-        )}
-        {user.isAdmin && (
-          <button className="notif-btn" style={{marginRight: 12,background:'#38b2ac',color:'#fff',border:'none',borderRadius:8,padding:'10px 22px',fontWeight:'bold',fontSize:'1em',cursor:'pointer'}} onClick={()=>setShowNotifPopup(true)}>
-            إرسال إشعار
-          </button>
-        )}
+        <div style={{display:'flex',gap:8,marginTop:10}}>
+          {/* زر إدارة الأسعار يظهر فقط للأدمن الحقيقي */}
+          {user.email === "mario.kabreta@gmail.com" && (
+            <button className="admin-access-btn" style={{marginRight: 12}} onClick={() => setShowAdmin(true)}>
+              إدارة الأسعار
+            </button>
+          )}
+          {user.isAdmin && (
+            <button className="notif-btn" style={{marginRight: 12,background:'#38b2ac',color:'#fff',border:'none',borderRadius:8,padding:'10px 22px',fontWeight:'bold',fontSize:'1em',cursor:'pointer'}} onClick={()=>setShowNotifPopup(true)}>
+              إرسال إشعار
+            </button>
+          )}
+        </div>
       </header>
-      <div className="provider-profile">
+      <div className="provider-profile" style={{textAlign:'center'}}>
         <div>
           <b>التخصص:</b> {user.providerType}
         </div>
@@ -209,4 +236,3 @@ export default function CareProviderDashboard({ user, setUser }) {
     </div>
   );
 }
-// عن المطور: تم نقل الكارد ليكون داخل عنصر React الرئيسي فقط
