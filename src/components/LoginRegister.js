@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./LoginRegister.css";
+import ErrorPopup from "./ErrorPopup";
 
 export default function LoginRegister({ setUser }) {
   const [isRegister, setIsRegister] = useState(false);
@@ -17,6 +18,7 @@ export default function LoginRegister({ setUser }) {
     license: null,
   });
   const [loading, setLoading] = useState(false);
+  const [errorPopup, setErrorPopup] = useState(null);
 
   function handleChange(e) {
     const { name, value, files } = e.target;
@@ -41,7 +43,19 @@ export default function LoginRegister({ setUser }) {
         .then((res) => res.json())
         .then((user) => {
           setLoading(false);
-          setUser(user);
+          if (user && user.id) {
+            setUser(user);
+          } else {
+            setErrorPopup({
+              message: "فشل إنشاء الحساب. يرجى التأكد من صحة البيانات أو أن البريد الإلكتروني غير مستخدم مسبقًا.",
+            });
+          }
+        })
+        .catch(() => {
+          setLoading(false);
+          setErrorPopup({
+            message: "حدث خطأ أثناء إنشاء الحساب. حاول مرة أخرى لاحقًا.",
+          });
         });
     } else {
       // تسجيل دخول: تحقق من البريد وكلمة المرور
@@ -54,15 +68,30 @@ export default function LoginRegister({ setUser }) {
           if (users.length > 0) {
             setUser(users[0]);
           } else {
-            alert("بيانات الدخول غير صحيحة");
+            setErrorPopup({
+              message: "بيانات الدخول غير صحيحة. يرجى التأكد من البريد الإلكتروني وكلمة المرور.",
+            });
           }
+        })
+        .catch(() => {
+          setLoading(false);
+          setErrorPopup({
+            message: "حدث خطأ أثناء محاولة تسجيل الدخول. حاول مرة أخرى لاحقًا.",
+          });
         });
     }
   }
 
   return (
     <div className="login-register-bg">
-      <div className="login-logo-circle">
+      {errorPopup && (
+        <ErrorPopup
+          message={errorPopup.message}
+          onClose={() => setErrorPopup(null)}
+          recoverLink="https://wa.me/201234567890" // رابط استعادة كلمة المرور (واتساب أو صفحة دعم)
+        />
+      )}
+      <div className="login-logo-circle login-logo-circle-main">
         <img src="/wight.png" alt="شعار الموقع" />
       </div>
       <div className="login-register-card">

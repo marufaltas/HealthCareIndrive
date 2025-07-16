@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
+import FallingIcons from "./FallingIcons";
 import "./OrderPendingPopup.css";
 
-export default function OrderPendingPopup({ order, onClose, autoClose = true, delay = 5000 }) {
+export default function OrderPendingPopup({ order, onClose, autoClose = true, delay = 4000 }) {
   useEffect(() => {
     if (autoClose) {
       const timer = setTimeout(() => {
@@ -15,7 +16,12 @@ export default function OrderPendingPopup({ order, onClose, autoClose = true, de
 
   return (
     <div className="order-pending-popup-overlay">
-      <div className="order-pending-popup-card">
+      <FallingIcons />
+      <div className="order-pending-popup-card order-pending-popup-card-welcome">
+        <div className="order-pending-logo-circle">
+          <img src="/wight.png" alt="شعار الموقع" />
+        </div>
+        <h1 className="order-pending-welcome-title">أهلاً بيك في <span style={{ color: "#38b2ac" }}>HealthCare InDrive</span> للرعاية الصحية</h1>
         <div className="order-pending-loader"></div>
         <h3>تم إرسال طلبك بنجاح!</h3>
         <p>جاري البحث عن مقدم رعاية مناسب لطلبك...</p>
