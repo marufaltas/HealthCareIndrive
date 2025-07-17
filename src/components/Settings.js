@@ -9,14 +9,25 @@ export default function Settings({ setUser, user }) {
   const [saving, setSaving] = useState(false);
   // إعدادات التطبيق
   const [fontSize, setFontSize] = useState(16);
-  const [darkMode, setDarkMode] = useState(false);
+  // الوضع الليلي: جلب من localStorage إذا كان مفعل مسبقاً
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem('darkMode');
+    return saved === 'true';
+  });
   const [invertColors, setInvertColors] = useState(false);
 
   // تطبيق إعدادات الخط والوضع الليلي والعكس
   React.useEffect(() => {
     document.body.style.fontSize = fontSize + "px";
-    document.body.classList.toggle("dark-mode", darkMode);
+    if (darkMode) {
+      document.body.setAttribute('data-theme', 'dark');
+      document.body.classList.add('dark');
+    } else {
+      document.body.removeAttribute('data-theme');
+      document.body.classList.remove('dark');
+    }
     document.body.classList.toggle("invert-colors", invertColors);
+    localStorage.setItem('darkMode', darkMode);
   }, [fontSize, darkMode, invertColors]);
 
   function handleLogout() {
@@ -85,11 +96,16 @@ export default function Settings({ setUser, user }) {
               <input type="range" min="12" max="28" value={fontSize} onChange={e => setFontSize(Number(e.target.value))} />
               <span style={{ marginRight: 8 }}>{fontSize}px</span>
             </div>
-            <div>
-              <label>الوضع الليلي:</label>
-              <input type="checkbox" checked={darkMode} onChange={e => setDarkMode(e.target.checked)} />
+            <div style={{marginTop:12}}>
+              <label htmlFor="darkModeToggle" style={{marginLeft:8}}>الوضع الليلي:</label>
+              <button
+                id="darkModeToggle"
+                className="theme-toggle-btn"
+                style={{background:darkMode?'#232946':'#e2e8f0',color:darkMode?'#e3f6ff':'#232946',border:'1px solid #38b2ac',borderRadius:8,padding:'8px 18px',fontWeight:'bold',fontSize:'1em',cursor:'pointer',marginRight:8}}
+                onClick={()=>setDarkMode(d=>!d)}
+              >{darkMode ? 'وضع النهار' : 'وضع الليل'}</button>
             </div>
-            <div>
+            <div style={{marginTop:12}}>
               <label>عكس الألوان (لضعاف البصر):</label>
               <input type="checkbox" checked={invertColors} onChange={e => setInvertColors(e.target.checked)} />
             </div>

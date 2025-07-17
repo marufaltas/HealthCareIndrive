@@ -28,6 +28,8 @@ function TrackOrder({ user }) {
   const [acceptedProvider, setAcceptedProvider] = useState("");
   // حفظ معرفات الطلبات التي تم إظهار إشعار القبول لها
   const [shownAcceptedIds, setShownAcceptedIds] = useState([]);
+  // معرف الطلب الحالي الذي يظهر له popup القبول
+  const [activeAcceptedPopupId, setActiveAcceptedPopupId] = useState(null);
 
   useEffect(() => {
     if (!user) return;
@@ -35,17 +37,26 @@ function TrackOrder({ user }) {
     fetch(`https://helthend-production.up.railway.app/orders?patientId=${user.id}`)
       .then(res => res.json())
       .then(newOrders => {
+        // إذا تم إنجاز الطلب الحالي، أخفي popup القبول
+        if (activeAcceptedPopupId) {
+          const activeOrder = newOrders.find(o => o.id === activeAcceptedPopupId);
+          if (!activeOrder || activeOrder.status === 'done' || activeOrder.status === 'rejected') {
+            setShowAcceptedPopup(false);
+            setActiveAcceptedPopupId(null);
+          }
+        }
         // ابحث عن طلب جديد تم قبوله الآن ولم يظهر إشعاره من قبل
         const justAccepted = newOrders.filter(o => o.status === 'accepted' && o.providerId && !shownAcceptedIds.includes(o.id));
         if (justAccepted.length > 0) {
           setAcceptedProvider(justAccepted[0].providerName || "");
           setShowAcceptedPopup(true);
           setShownAcceptedIds(prev => [...prev, justAccepted[0].id]);
+          setActiveAcceptedPopupId(justAccepted[0].id);
         }
         setOrders(newOrders);
       });
     // eslint-disable-next-line
-  }, [user, shownAcceptedIds]);
+  }, [user, shownAcceptedIds, activeAcceptedPopupId]);
 
   if (!user) return null;
 

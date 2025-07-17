@@ -5,6 +5,7 @@ import AdminPage from "../AdminPage";
 import SendNotificationPopup from "./SendNotificationPopup";
 
 export default function CareProviderDashboard({ user, setUser }) {
+  const [showProfile, setShowProfile] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [orders, setOrders] = useState([]);
   const [showAdmin, setShowAdmin] = useState(false);
@@ -77,16 +78,24 @@ export default function CareProviderDashboard({ user, setUser }) {
   }
 
   return (
-    <div className="provider-dashboard">
+    <div className="provider-dashboard" style={{background:'linear-gradient(135deg,#e3f6ff 10%,#38b2ac 100%)',minHeight:'100vh',paddingBottom:32}}>
       <header style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',marginBottom:16}}>
-        <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8}}>
-          <h2 style={{fontSize:'1.4em',fontWeight:'bold',margin:0,textAlign:'center'}}>مرحباً</h2>
-          <span style={{fontSize:'1.4em',fontWeight:'bold',margin:0,textAlign:'center'}}>{user.fullName || user.name} 👋</span>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,marginBottom:8}}>
+          <img src="/user-placeholder.png" alt="صورة مقدم الرعاية" style={{width:54,height:54,borderRadius:'50%',boxShadow:'0 2px 8px #3182ce33',marginLeft:8}} />
+          <h2 style={{fontSize:'1.4em',fontWeight:'bold',margin:0,textAlign:'center',color:'#3182ce'}}>مرحباً</h2>
+          <span style={{fontSize:'1.4em',fontWeight:'bold',margin:0,textAlign:'center',color:'#232946'}}>{user.fullName || user.name} 👋</span>
+        </div>
+        <div style={{fontSize:'1.1em',color:'#38b2ac',fontWeight:'bold',marginBottom:8}}>
+          <span style={{background:'#e3f6ff',padding:'4px 14px',borderRadius:8,boxShadow:'0 2px 8px #3182ce22'}}>التخصص: {user.providerType}</span>
         </div>
         <button className="logout-btn" style={{marginTop:10}} onClick={() => setUser(null)}>
           تسجيل الخروج
         </button>
         <div style={{display:'flex',gap:8,marginTop:10}}>
+          {/* زر بيانات الحساب */}
+          <button className="profile-btn" style={{background:'#3182ce',color:'#fff',border:'none',borderRadius:8,padding:'10px 22px',fontWeight:'bold',fontSize:'1em',cursor:'pointer'}} onClick={()=>setShowProfile(true)}>
+            بيانات الحساب
+          </button>
           {/* زر إدارة الأسعار يظهر فقط للأدمن الحقيقي */}
           {user.email === "mario.kabreta@gmail.com" && (
             <button className="admin-access-btn" style={{marginRight: 12}} onClick={() => setShowAdmin(true)}>
@@ -101,57 +110,58 @@ export default function CareProviderDashboard({ user, setUser }) {
         </div>
       </header>
       <div className="provider-profile" style={{textAlign:'center'}}>
-        <div>
-          <b>التخصص:</b> {user.providerType}
-        </div>
-        <div>
-          <b>الاسم:</b> {user.fullName || user.name}
-        </div>
-        <div>
-          <b>عدد الخدمات المنجزة:</b> {completedCount}
+        <div style={{display:'flex',justifyContent:'center',gap:24,margin:'12px 0'}}>
+          <div style={{background:'#fff',borderRadius:12,padding:'12px 24px',boxShadow:'0 2px 8px #3182ce22',minWidth:120}}>
+            <div style={{fontWeight:'bold',color:'#3182ce'}}>عدد الخدمات المنجزة</div>
+            <div style={{fontSize:'1.3em',fontWeight:'bold',color:'#43a047'}}>{completedCount}</div>
+          </div>
+          <div style={{background:'#fff',borderRadius:12,padding:'12px 24px',boxShadow:'0 2px 8px #3182ce22',minWidth:120}}>
+            <div style={{fontWeight:'bold',color:'#3182ce'}}>اسم مقدم الرعاية</div>
+            <div style={{fontSize:'1.1em',fontWeight:'bold',color:'#232946'}}>{user.fullName || user.name}</div>
+          </div>
         </div>
       </div>
       <div className="provider-content">
-        <div className="provider-card" onClick={() => {}}>
-          <h3>الطلبات الجديدة</h3>
+        <div className="provider-card" style={{background:'#fff',borderRadius:14,boxShadow:'0 2px 8px #3182ce22',marginBottom:18,padding:'18px 16px'}}>
+          <h3 style={{color:'#3182ce',marginBottom:12}}>الطلبات الجديدة</h3>
           <div className="orders-list">
             {ordersByStatus("new").length === 0 && <div className="empty-state">لا توجد طلبات جديدة</div>}
             {ordersByStatus("new").map((order) => (
-              <div key={order.id} className="order-item" onClick={() => setSelectedOrder(order)}>
-                <b>{order.patientName}</b> - {order.serviceNames ? order.serviceNames.join(", ") : order.service}
+              <div key={order.id} className="order-item" style={{background:'#e3f6ff',borderRadius:8,padding:'10px 14px',marginBottom:8,cursor:'pointer',boxShadow:'0 2px 8px #3182ce11'}} onClick={() => setSelectedOrder(order)}>
+                <b style={{color:'#232946'}}>{order.patientName}</b> - <span style={{color:'#3182ce'}}>{order.serviceNames ? order.serviceNames.join(", ") : order.service}</span>
               </div>
             ))}
           </div>
         </div>
         <div className="provider-card">
-          <h3>الطلبات المقبولة (لم يتم إنجازها)</h3>
+          <h3 style={{color:'#43a047',marginBottom:12}}>الطلبات المقبولة (لم يتم إنجازها)</h3>
           <div className="orders-list">
             {ordersByStatus("accepted").length === 0 && <div className="empty-state">لا توجد طلبات</div>}
             {ordersByStatus("accepted").map((order) => (
-              <div key={order.id} className="order-item">
-                <b>{order.patientName}</b> - {order.serviceNames ? order.serviceNames.join(", ") : order.service}
+              <div key={order.id} className="order-item" style={{background:'#e6ffed',borderRadius:8,padding:'10px 14px',marginBottom:8,boxShadow:'0 2px 8px #43a04711'}}>
+                <b style={{color:'#232946'}}>{order.patientName}</b> - <span style={{color:'#43a047'}}>{order.serviceNames ? order.serviceNames.join(", ") : order.service}</span>
               </div>
             ))}
           </div>
         </div>
         <div className="provider-card">
-          <h3>الطلبات المقبولة (تم إنجازها)</h3>
+          <h3 style={{color:'#3182ce',marginBottom:12}}>الطلبات المنجزة</h3>
           <div className="orders-list">
             {ordersByStatus("done").length === 0 && <div className="empty-state">لا توجد طلبات</div>}
             {ordersByStatus("done").map((order) => (
-              <div key={order.id} className="order-item">
-                <b>{order.patientName}</b> - {order.serviceNames ? order.serviceNames.join(", ") : order.service}
+              <div key={order.id} className="order-item" style={{background:'#e3f6ff',borderRadius:8,padding:'10px 14px',marginBottom:8,boxShadow:'0 2px 8px #3182ce11'}}>
+                <b style={{color:'#232946'}}>{order.patientName}</b> - <span style={{color:'#3182ce'}}>{order.serviceNames ? order.serviceNames.join(", ") : order.service}</span>
               </div>
             ))}
           </div>
         </div>
         <div className="provider-card">
-          <h3>الطلبات المرفوضة</h3>
+          <h3 style={{color:'#e53e3e',marginBottom:12}}>الطلبات المرفوضة</h3>
           <div className="orders-list">
             {ordersByStatus("rejected").length === 0 && <div className="empty-state">لا توجد طلبات</div>}
             {ordersByStatus("rejected").map((order) => (
-              <div key={order.id} className="order-item">
-                <b>{order.patientName}</b> - {order.serviceNames ? order.serviceNames.join(", ") : order.service}
+              <div key={order.id} className="order-item" style={{background:'#ffe6e6',borderRadius:8,padding:'10px 14px',marginBottom:8,boxShadow:'0 2px 8px #e53e3e11'}}>
+                <b style={{color:'#232946'}}>{order.patientName}</b> - <span style={{color:'#e53e3e'}}>{order.serviceNames ? order.serviceNames.join(", ") : order.service}</span>
               </div>
             ))}
           </div>
@@ -161,13 +171,13 @@ export default function CareProviderDashboard({ user, setUser }) {
       {/* Popup تفاصيل الطلب */}
       {selectedOrder && (
         <div className="order-popup-overlay" onClick={() => setSelectedOrder(null)}>
-          <div className="order-popup" onClick={e => e.stopPropagation()}>
-            <h3>تفاصيل الطلب</h3>
-            <div><b>اسم المريض:</b> {selectedOrder.patientName}</div>
-            <div><b>العنوان:</b> {selectedOrder.address}</div>
-            <div><b>الخدمات المطلوبة:</b> {selectedOrder.serviceNames ? selectedOrder.serviceNames.join(", ") : selectedOrder.service}</div>
-            <div><b>السعر الأساسي:</b> {selectedOrder.basePrice} ج.م</div>
-            <div><b>السعر المقترح من المريض:</b> {selectedOrder.suggestedPrice} ج.م</div>
+          <div className="order-popup" onClick={e => e.stopPropagation()} style={{background:'#f7fafc',borderRadius:16,padding:'24px 18px',boxShadow:'0 2px 16px #3182ce22',maxWidth:420}}>
+            <h3 style={{color:'#3182ce',marginBottom:12}}>تفاصيل الطلب</h3>
+            <div style={{marginBottom:8}}><b>اسم المريض:</b> <span style={{color:'#232946'}}>{selectedOrder.patientName}</span></div>
+            <div style={{marginBottom:8}}><b>العنوان:</b> <span style={{color:'#232946'}}>{selectedOrder.address}</span></div>
+            <div style={{marginBottom:8}}><b>الخدمات المطلوبة:</b> <span style={{color:'#3182ce'}}>{selectedOrder.serviceNames ? selectedOrder.serviceNames.join(", ") : selectedOrder.service}</span></div>
+            <div style={{marginBottom:8}}><b>السعر الأساسي:</b> <span style={{color:'#232946'}}>{selectedOrder.basePrice} ج.م</span></div>
+            <div style={{marginBottom:8}}><b>السعر المقترح من المريض:</b> <span style={{color:'#232946'}}>{selectedOrder.suggestedPrice} ج.م</span></div>
             <div style={{margin: "10px 0"}}>
               <iframe
                 title="خريطة المريض"
@@ -201,10 +211,10 @@ export default function CareProviderDashboard({ user, setUser }) {
                 }}
               >مشاركة موقعي الحالي</button>
             </div>
-            <div style={{display: "flex", gap: 10, marginTop: 10}}>
+            <div style={{display: "flex", gap: 10, marginTop: 10,justifyContent:'center'}}>
               {selectedOrder.status === "new" && <>
-                <button className="accept-btn" onClick={() => handleOrderAction(selectedOrder.id, "accept")}>قبول الطلب</button>
-                <button className="reject-btn" onClick={() => handleOrderAction(selectedOrder.id, "reject")}>رفض الطلب</button>
+                <button className="accept-btn" style={{background:'#43a047',color:'#fff',padding:'8px 18px',border:'none',borderRadius:8,fontWeight:'bold',fontSize:'1em',cursor:'pointer'}} onClick={() => handleOrderAction(selectedOrder.id, "accept")}>قبول الطلب</button>
+                <button className="reject-btn" style={{background:'#e53e3e',color:'#fff',padding:'8px 18px',border:'none',borderRadius:8,fontWeight:'bold',fontSize:'1em',cursor:'pointer'}} onClick={() => handleOrderAction(selectedOrder.id, "reject")}>رفض الطلب</button>
               </>}
               {selectedOrder.status === "accepted" && (
                 <span style={{color:'#43a047',fontWeight:'bold',fontSize:'1.1em'}}>في انتظار إتمام الخدمة من المريض</span>
@@ -226,6 +236,18 @@ export default function CareProviderDashboard({ user, setUser }) {
           <div className="order-popup" onClick={e => e.stopPropagation()}>
             <AdminPage />
             <button className="close-popup-btn" onClick={() => setShowAdmin(false)}>إغلاق</button>
+          </div>
+        </div>
+      )}
+      {/* نافذة بيانات الحساب */}
+      {showProfile && (
+        <div className="order-popup-overlay" onClick={() => setShowProfile(false)}>
+          <div className="order-popup" onClick={e => e.stopPropagation()}>
+            {/* إعادة استخدام نفس مكون بيانات الحساب */}
+            <div style={{maxWidth:420}}>
+              {user && <Profile user={user} />}
+            </div>
+            <button className="close-popup-btn" onClick={() => setShowProfile(false)}>إغلاق</button>
           </div>
         </div>
       )}
