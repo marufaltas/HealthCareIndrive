@@ -13,6 +13,48 @@ import AdminServicesPage from "./AdminServicesPage";
 import "./App.css";
 
 
+function GlobalNotificationPopup({ user }) {
+  const [notification, setNotification] = useState(null);
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    // جلب آخر إشعار موجه للفئة المناسبة
+    fetch(`https://helthend-production.up.railway.app/notifications?target=${user.type === 'patient' ? 'patients' : 'providers'}&_sort=date&_order=desc&_limit=1`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.length > 0) {
+          setNotification(data[0]);
+          setShow(true);
+        }
+      });
+  }, [user]);
+
+  if (!notification || !show) return null;
+
+  // دعم الروابط في نص الإشعار (مثال: [رابط](https://example.com))
+  function renderMessage(msg) {
+    return msg.split(/(\[.*?\]\(.*?\))/g).map((part, i) => {
+      const match = part.match(/\[(.*?)\]\((.*?)\)/);
+      if (match) {
+        return <a key={i} href={match[2]} target="_blank" rel="noopener noreferrer" style={{color:'#3182ce',textDecoration:'underline'}}>{match[1]}</a>;
+      }
+      return part;
+    });
+  }
+
+  return (
+    <div className="popup-overlay" style={{zIndex: 10000}}>
+      <div className="popup-card" style={{maxWidth:400,position:'relative'}}>
+        <button onClick={()=>setShow(false)} style={{position:'absolute',top:8,left:8,background:'none',border:'none',fontSize:'1.5em',color:'#888',cursor:'pointer'}}>×</button>
+        <h3 style={{color:'#3182ce'}}>إشعار هام</h3>
+        <div style={{margin:'12px 0',fontSize:'1.1em'}}>{renderMessage(notification.message)}</div>
+        <div style={{fontSize:'0.9em',color:'#888'}}>بتاريخ: {new Date(notification.date).toLocaleString()}</div>
+      </div>
+    </div>
+  );
+}
+
 function AppContent() {
   // حالة المصادقة مع حفظ الجلسة
   const [user, setUserState] = useState(() => {
@@ -109,7 +151,49 @@ function AppContent() {
           <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
         </div>
       )}
+      {user && <GlobalNotificationPopup user={user} />}
     </div>
+  );
+}
+
+function FloatingAssistant() {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        style={{
+          position: "fixed",
+          bottom: 24,
+          right: 24,
+          zIndex: 9999,
+          background: "#43a047",
+          color: "#fff",
+          border: "none",
+          borderRadius: "50%",
+          width: 56,
+          height: 56,
+          boxShadow: "0 2px 12px #3182ce44",
+          fontSize: "2em",
+          cursor: "pointer",
+          opacity: 0.85,
+          transition: "opacity 0.2s"
+        }}
+        title="المساعد الذكي"
+      >
+        🤖
+      </button>
+      {open && (
+        <div className="popup-overlay" style={{zIndex: 10000}}>
+          <div className="popup-card" style={{maxWidth:350}}>
+            <h3>المساعد الذكي</h3>
+            <div style={{marginBottom:8}}>اسأل عن أي خدمة أو استفسار طبي وسيتم الرد عليك فوراً!</div>
+            <textarea placeholder="اكتب سؤالك هنا..." style={{width:"100%",marginBottom:8}} />
+            <button onClick={()=>setOpen(false)} style={{background:'#43a047',color:'#fff',padding:'8px 18px',border:'none',borderRadius:8}}>إغلاق</button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -117,6 +201,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <AppContent />
+      <FloatingAssistant />
     </ThemeProvider>
   );
 }

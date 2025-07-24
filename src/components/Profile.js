@@ -3,6 +3,10 @@ import "./Profile.css";
 
 export default function Profile({ user }) {
   // عرض بيانات المريض الفعلية
+  const [showRating, setShowRating] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [showAssistant, setShowAssistant] = useState(false);
   if (!user) return null;
   return (
     <div className="profile-main" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',minHeight:'80vh'}}>
@@ -17,7 +21,38 @@ export default function Profile({ user }) {
           <div><b>العمر:</b> {user.age}</div>
           <div><b>التحقق:</b> <img src="/id-card.png" alt="بطاقة شخصية" style={{height: 32, verticalAlign: "middle", borderRadius: '8px', border: '2px solid #38b2ac'}}/></div>
         </div>
+        <div style={{marginTop:24,display:'flex',gap:12,justifyContent:'center'}}>
+          <button style={{background:'#3182ce',color:'#fff',padding:'10px 22px',border:'none',borderRadius:8,fontWeight:'bold',fontSize:'1em',cursor:'pointer'}} onClick={()=>setShowRating(true)}>تقييم آخر خدمة</button>
+          <button style={{background:'#43a047',color:'#fff',padding:'10px 22px',border:'none',borderRadius:8,fontWeight:'bold',fontSize:'1em',cursor:'pointer'}} onClick={()=>setShowAssistant(true)}>اسأل المساعد الذكي</button>
+        </div>
       </div>
+      {/* Popup تقييم الخدمة */}
+      {showRating && (
+        <div className="popup-overlay">
+          <div className="popup-card" style={{maxWidth:350}}>
+            <h3>تقييم الخدمة</h3>
+            <div style={{marginBottom:8}}>
+              {[1,2,3,4,5].map(star => (
+                <span key={star} style={{fontSize: "2em", color: star <= rating ? "#FFD700" : "#ccc", cursor: "pointer"}} onClick={()=>setRating(star)}>★</span>
+              ))}
+            </div>
+            <textarea placeholder="اكتب تعليقك (اختياري)" value={comment} onChange={e => setComment(e.target.value)} style={{width:"100%",marginBottom:8}} />
+            <button onClick={()=>{setShowRating(false);setRating(0);setComment("");}} style={{background:'#3182ce',color:'#fff',padding:'8px 18px',border:'none',borderRadius:8}}>إرسال التقييم</button>
+            <button onClick={()=>setShowRating(false)} style={{marginTop:8}}>إغلاق</button>
+          </div>
+        </div>
+      )}
+      {/* Popup المساعد الذكي */}
+      {showAssistant && (
+        <div className="popup-overlay">
+          <div className="popup-card" style={{maxWidth:350}}>
+            <h3>المساعد الذكي</h3>
+            <div style={{marginBottom:8}}>اسأل عن أي خدمة أو استفسار طبي وسيتم الرد عليك فوراً!</div>
+            <textarea placeholder="اكتب سؤالك هنا..." style={{width:"100%",marginBottom:8}} />
+            <button onClick={()=>setShowAssistant(false)} style={{background:'#43a047',color:'#fff',padding:'8px 18px',border:'none',borderRadius:8}}>إغلاق</button>
+          </div>
+        </div>
+      )}
       {/* عن المطور */}
       <div className="about-developer-card" style={{marginTop: 0,boxShadow:'0 2px 8px #3182ce22',borderRadius:14,padding:'18px 16px',background:'#f7fafc',width:'100%',maxWidth:400}}>
         <div className="about-dev-avatar" style={{display:'flex',justifyContent:'center',marginBottom:8}}>

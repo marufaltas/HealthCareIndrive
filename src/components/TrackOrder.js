@@ -30,6 +30,8 @@ function TrackOrder({ user }) {
   const [shownAcceptedIds, setShownAcceptedIds] = useState([]);
   // معرف الطلب الحالي الذي يظهر له popup القبول
   const [activeAcceptedPopupId, setActiveAcceptedPopupId] = useState(null);
+  // state
+  const [showLiveMap, setShowLiveMap] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -113,6 +115,22 @@ function TrackOrder({ user }) {
     );
   }
 
+  function repeatOrder(order) {
+    fetch("https://helthend-production.up.railway.app/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...order,
+        id: undefined,
+        status: "new",
+        providerId: null,
+        providerName: null,
+        providerPhone: null,
+        rated: false
+      })
+    }).then(()=>alert("تم إرسال الطلب بنجاح!"));
+  }
+
   return (
     <div style={{maxWidth:700,margin:"24px auto"}}>
       <h2 style={{color:'#3182ce'}}>طلباتك الحالية</h2>
@@ -160,6 +178,29 @@ function TrackOrder({ user }) {
           })}
         </>
       )}
+      {selected && selected.status === "accepted" && selected.providerLocation && (
+        <button style={{margin:"12px 0",background:"#38b2ac",color:"#fff",padding:"10px 24px",border:"none",borderRadius:8}} onClick={()=>setShowLiveMap(true)}>
+          تتبع مقدم الرعاية على الخريطة
+        </button>
+      )}
+      {showLiveMap && (
+        <div className="popup-overlay">
+          <div className="popup-card" style={{maxWidth:600}}>
+            <MapDistance patient={selected.location} provider={selected.providerLocation} orderId={selected.id} liveTrack={true} />
+            <button onClick={()=>setShowLiveMap(false)} style={{marginTop:12}}>إغلاق</button>
+          </div>
+        </div>
+      )}
+      {/* في قائمة الطلبات المنجزة: */}
+      {orders.filter(o => o.status === 'done').map(order => (
+        <div key={order.id} style={{background:'#f7fafc',borderRadius:10,padding:12,marginBottom:8}}>
+          <b>الخدمة:</b> {order.serviceNames?.join(", ")}<br/>
+          <b>مقدم الرعاية:</b> {order.providerName || "-"}
+          <button style={{marginRight:12,background:'#3182ce',color:'#fff',border:'none',borderRadius:8,padding:'6px 18px'}} onClick={()=>repeatOrder(order)}>
+            إعادة الطلب
+          </button>
+        </div>
+      ))}
     </div>
   );
 }

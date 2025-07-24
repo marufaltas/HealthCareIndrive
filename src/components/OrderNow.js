@@ -10,7 +10,12 @@ const providerTypes = [
   { key: "lab", label: "تحاليل", icon: "/lap-icon.png", color: "#f56565" },
   { key: "xray", label: "أشعة", icon: "/physio-icon.png", color: "#805ad5" },
   { key: "pharmacist", label: "صيدلي", icon: "/pharmacist-icon.png", color: "#ecc94b" },
+  { key: "nutrition", label: "استشاري تغذية", icon: "/doctor-icon.png", color: "#38b2ac" },
+  { key: "psychology", label: "علاج نفسي", icon: "/doctor-icon.png", color: "#805ad5" },
+  { key: "babycare", label: "تمريض حديثي الولادة", icon: "/nurse-icon.png", color: "#f6ad55" },
 ];
+  // دعم رفع مرفقات وتقارير طبية
+  const [attachments, setAttachments] = useState([]);
 
 export default function OrderNow({ user }) {
   const [step, setStep] = useState(0);
@@ -121,7 +126,8 @@ export default function OrderNow({ user }) {
       status: "new",
       createdAt: new Date().toISOString(),
       patientName: user.fullName,
-      address: location.address
+      address: location.address,
+      attachments: attachments.length > 0 ? Array.from(attachments).map(f => f.name) : []
     };
     fetch("https://helthend-production.up.railway.app/orders", {
       method: "POST",
@@ -246,6 +252,11 @@ export default function OrderNow({ user }) {
             value={suggestedPrice}
             onChange={e => setSuggestedPrice(e.target.value)}
           />
+          {/* رفع مرفقات وتقارير طبية */}
+          <div style={{margin:'12px 0'}}>
+            <label style={{fontWeight:'bold'}}>رفع مرفقات/تقارير طبية (اختياري):</label>
+            <input type="file" multiple onChange={e => setAttachments(e.target.files)} style={{marginTop:6}} />
+          </div>
           <button type="submit" disabled={sending} className="modern-send-btn">
             {sending ? <span className="loader"></span> : <><span role="img" aria-label="إرسال">🚀</span> إرسال الطلب</>}
           </button>
