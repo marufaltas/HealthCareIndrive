@@ -11,9 +11,9 @@ const serviceLabels = {
   pharmacistServices: "خدمات الصيدلي",
   labServices: "خدمات التحاليل",
   xrayServices: "خدمات الأشعة",
-  psychologyServices: "خدمات العلاج النفسي",      // جديد
-  babycareServices: "خدمات تمريض حديثي الولادة",   // جديد
-  nutritionServices: "خدمات استشاري التغذية"       // جديد
+  psychologyServices: "خدمات العلاج النفسي",
+  babycareServices: "خدمات تمريض حديثي الولادة",
+  nutritionServices: "خدمات استشاري التغذية"
 };
 
 const AdminServices = ({ allServices, onUpdate }) => {

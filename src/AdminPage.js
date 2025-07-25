@@ -19,9 +19,9 @@ const AdminPage = () => {
       "pharmacistServices",
       "labServices",
       "xrayServices",
-      "psychologyServices",      // جديد
-      "babycareServices",        // جديد
-      "nutritionServices"        // جديد
+      "psychologyServices",
+      "babycareServices",
+      "nutritionServices"
     ];
     Promise.all(
       serviceKeys.map(key =>

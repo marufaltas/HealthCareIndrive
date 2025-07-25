@@ -58,6 +58,9 @@ export default function OrderNow({ user }) {
       else if (selectedType.key === "pharmacist") endpoint = "/pharmacistServices";
       else if (selectedType.key === "lab") endpoint = "/labServices";
       else if (selectedType.key === "xray") endpoint = "/xrayServices";
+      else if (selectedType.key === "psychology") endpoint = "/psychologyServices";
+      else if (selectedType.key === "babycare") endpoint = "/babycareServices";
+      else if (selectedType.key === "nutrition") endpoint = "/nutritionServices";
       if (endpoint) {
         fetch(`${API_BASE}${endpoint}`)
           .then(res => res.json())

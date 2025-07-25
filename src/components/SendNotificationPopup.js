@@ -6,6 +6,19 @@ const API_BASE =
     ? "http://localhost:5000"
     : "https://helthend-production.up.railway.app";
 
+// تخصصات مقدمي الرعاية
+const providerSpecialties = [
+  { key: "nurse", label: "ممرض" },
+  { key: "doctor", label: "طبيب" },
+  { key: "physio", label: "علاج طبيعي" },
+  { key: "pharmacist", label: "صيدلي" },
+  { key: "lab", label: "فني تحاليل" },
+  { key: "xray", label: "فني أشعة" },
+  { key: "nutrition", label: "استشاري تغذية" },
+  { key: "psychology", label: "علاج نفسي" },
+  { key: "babycare", label: "تمريض حديثي الولادة" }
+];
+
 function SendNotificationPopup({ onClose }) {
   const [message, setMessage] = useState("");
   const [toPatient, setToPatient] = useState(false);
@@ -17,8 +30,11 @@ function SendNotificationPopup({ onClose }) {
   const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState(null);
 
+  // تخصصات مختارة عند اختيار كل مقدمي الرعاية الصحية
+  const [selectedSpecialties, setSelectedSpecialties] = useState([]);
+
   useEffect(() => {
-    fetch(`${API_BASE}/notifications?_sort=date&_order=desc`)
+    fetch(`${API_BASE}/notifications?_sort=createdAt&_order=desc`)
       .then(res => res.json())
       .then(setNotifications);
   }, []);
@@ -30,15 +46,45 @@ function SendNotificationPopup({ onClose }) {
     if (notifLink) {
       fullMsg += ` [رابط](${notifLink})`;
     }
-    const targets = [];
-    if (toPatient) targets.push("patients");
-    if (toProvider) targets.push("providers");
+
+    // تحديد الفئة المستهدفة حسب الاختيار
+    let targetType = "";
+    let targetSpecialties = [];
+    if (toPatient && !toProvider) {
+      targetType = "patient";
+    } else if (!toPatient && toProvider) {
+      targetType = "provider";
+      targetSpecialties = selectedSpecialties;
+    } else if (toPatient && toProvider) {
+      targetType = "all";
+      targetSpecialties = selectedSpecialties;
+    } else {
+      targetType = "";
+    }
+
+    if (!targetType) {
+      setSending(false);
+      setError("يجب اختيار الفئة المستهدفة (مريض أو مقدم رعاية)");
+      return;
+    }
+    if (toProvider && selectedSpecialties.length === 0) {
+      setSending(false);
+      setError("يرجى اختيار تخصص واحد على الأقل من مقدمي الرعاية الصحية");
+      return;
+    }
+
+    // بناء جسم الإشعار حسب ما يقبله json-server
     const notifBody = {
-      message: fullMsg,
-      target: targets.join(","),
-      date: new Date().toISOString(),
-      showOnce
+      body: fullMsg,
+      title: "إشعار جديد",
+      targetType,
+      specialties: targetSpecialties, // تخصصات مختارة
+      active: true,
+      showAsPopup: !showOnce ? true : false, // إذا كان showOnce=false يظهر دائماً
+      showOnce: !!showOnce,
+      createdAt: new Date().toISOString()
     };
+
     fetch(`${API_BASE}/notifications`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -51,7 +97,6 @@ function SendNotificationPopup({ onClose }) {
       .then(newNotif => {
         setSending(false);
         setSuccess(true);
-        // إذا لم يرجع السيرفر id أضف الإشعار يدوياً
         if (!newNotif.id) {
           newNotif = { ...notifBody, id: Math.random().toString(36).slice(2) };
         }
@@ -93,13 +138,38 @@ function SendNotificationPopup({ onClose }) {
         <div className="notif-checkbox-row">
           <label>
             <input type="checkbox" checked={toPatient} onChange={e => setToPatient(e.target.checked)} />
-            للمريض فقط
+            لكل المرضى
           </label>
           <label>
             <input type="checkbox" checked={toProvider} onChange={e => setToProvider(e.target.checked)} />
-            لمقدمي الرعاية الصحية
+            لكل مقدمي الرعاية الصحية
           </label>
         </div>
+        {/* اختيار تخصصات مقدمي الرعاية إذا تم اختيارهم */}
+        {toProvider && (
+          <div style={{margin:'10px 0',textAlign:'right'}}>
+            <b style={{color:'#3182ce'}}>اختر التخصصات المستهدفة:</b>
+            <div style={{display:'flex',flexWrap:'wrap',gap:10,marginTop:8}}>
+              {providerSpecialties.map(s => (
+                <label key={s.key} style={{background:'#e3f6ff',padding:'6px 14px',borderRadius:8,cursor:'pointer',fontWeight:'bold',color:'#215175'}}>
+                  <input
+                    type="checkbox"
+                    checked={selectedSpecialties.includes(s.key)}
+                    onChange={e => {
+                      setSelectedSpecialties(prev =>
+                        e.target.checked
+                          ? [...prev, s.key]
+                          : prev.filter(k => k !== s.key)
+                      );
+                    }}
+                    style={{marginLeft:6}}
+                  />
+                  {s.label}
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
         <div className="notif-checkbox-row">
           <label>
             <input type="checkbox" checked={showOnce} onChange={e => setShowOnce(e.target.checked)} />
@@ -121,8 +191,8 @@ function SendNotificationPopup({ onClose }) {
         <div style={{maxHeight:180,overflowY:'auto'}}>
           {notifications.length === 0 ? <div>لا توجد إشعارات</div> : notifications.map(n => (
             <div key={n.id} style={{background:'#e3f6ff',borderRadius:8,padding:10,marginBottom:8,position:'relative'}}>
-              <b>{n.message}</b>
-              <div style={{fontSize:'0.9em',color:'#888'}}>بتاريخ: {new Date(n.date).toLocaleString()} | الفئة: {n.target}</div>
+              <b>{n.body}</b>
+              <div style={{fontSize:'0.9em',color:'#888'}}>بتاريخ: {new Date(n.createdAt).toLocaleString()} | الفئة: {n.targetType} {n.specialties && n.specialties.length > 0 ? `| تخصصات: ${n.specialties.join(", ")}` : ""}</div>
               <button onClick={()=>handleDeleteNotif(n.id)} style={{position:'absolute',top:8,left:8,background:'#e53e3e',color:'#fff',border:'none',borderRadius:6,padding:'2px 10px',fontWeight:'bold',cursor:'pointer'}}>حذف</button>
             </div>
           ))}
@@ -133,3 +203,4 @@ function SendNotificationPopup({ onClose }) {
 }
 
 export default SendNotificationPopup;
+

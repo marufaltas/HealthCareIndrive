@@ -243,9 +243,12 @@ export default function CareProviderDashboard({ user, setUser }) {
       {showProfile && (
         <div className="order-popup-overlay" onClick={() => setShowProfile(false)}>
           <div className="order-popup" onClick={e => e.stopPropagation()}>
-            {/* إعادة استخدام نفس مكون بيانات الحساب */}
+            {/* تحقق من وجود بيانات المستخدم */}
             <div style={{maxWidth:420}}>
-              {user && <Profile user={user} />}
+              {user
+                ? <Profile user={user} />
+                : <div style={{color:'red',fontWeight:'bold',padding:'24px'}}>لا توجد بيانات مستخدم لعرضها.</div>
+              }
             </div>
             <button className="close-popup-btn" onClick={() => setShowProfile(false)}>إغلاق</button>
           </div>
