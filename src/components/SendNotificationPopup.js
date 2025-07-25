@@ -15,7 +15,8 @@ function SendNotificationPopup({ onClose }) {
   const [success, setSuccess] = useState(false);
   const [notifLink, setNotifLink] = useState("");
   const [notifications, setNotifications] = useState([]);
-  // جلب الإشعارات الحالية
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     fetch(`${API_BASE}/notifications?_sort=date&_order=desc`)
       .then(res => res.json())
@@ -24,7 +25,7 @@ function SendNotificationPopup({ onClose }) {
 
   function handleSend() {
     setSending(true);
-    // بناء نص الإشعار مع الرابط إذا وجد
+    setError(null);
     let fullMsg = message;
     if (notifLink) {
       fullMsg += ` [رابط](${notifLink})`;
@@ -43,7 +44,10 @@ function SendNotificationPopup({ onClose }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(notifBody)
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error("فشل إرسال الإشعار. تحقق من الاتصال بالسيرفر أو من صحة البيانات.");
+        return res.json();
+      })
       .then(newNotif => {
         setSending(false);
         setSuccess(true);
@@ -52,6 +56,10 @@ function SendNotificationPopup({ onClose }) {
           setSuccess(false);
           onClose();
         }, 1500);
+      })
+      .catch(err => {
+        setSending(false);
+        setError(err.message || "حدث خطأ أثناء إرسال الإشعار.");
       });
   }
 
@@ -102,6 +110,7 @@ function SendNotificationPopup({ onClose }) {
           {sending ? "جاري الإرسال..." : "إرسال الإشعار"}
         </button>
         <button className="notif-close-btn" onClick={onClose}>إغلاق</button>
+        {error && <div style={{color:'red',margin:'10px 0',fontWeight:'bold'}}>{error}</div>}
         {success && <div className="notif-success-msg">تم إرسال الإشعار بنجاح!</div>}
         <hr style={{margin:'18px 0'}}/>
         <h4 style={{margin:'8px 0'}}>كل الإشعارات المرسلة</h4>
