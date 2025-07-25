@@ -9,15 +9,15 @@ const API_BASE =
     : "https://helthend-production.up.railway.app";
 
 const providerTypes = [
-  { key: "doctor", label: "طبيب", icon: "/doctor-icon.png", color: "#3182ce" },
-  { key: "nurse", label: "ممرض", icon: "/nurse-icon.png", color: "#38b2ac" },
-  { key: "physio", label: "علاج طبيعي", icon: "/physiotherapy.png", color: "#f6ad55" },
-  { key: "lab", label: "تحاليل", icon: "/lap-icon.png", color: "#f56565" },
-  { key: "xray", label: "أشعة", icon: "/physio-icon.png", color: "#805ad5" },
-  { key: "pharmacist", label: "صيدلي", icon: "/pharmacist-icon.png", color: "#ecc94b" },
-  { key: "nutrition", label: "استشاري تغذية", icon: "/doctor-icon.png", color: "#38b2ac" },
-  { key: "psychology", label: "علاج نفسي", icon: "/doctor-icon.png", color: "#805ad5" },
-  { key: "babycare", label: "تمريض حديثي الولادة", icon: "/nurse-icon.png", color: "#f6ad55" },
+  { key: "doctor", label: "طبيب", icon: "/doctor-icon.png", color: "#b8b8b8", neon: "#e5e5e5" },
+  { key: "nurse", label: "ممرض", icon: "/nurse-icon.png", color: "#c0eaff", neon: "#00eaff" },
+  { key: "physio", label: "علاج طبيعي", icon: "/physiotherapy.png", color: "#ffd700", neon: "#fff700" },
+  { key: "lab", label: "تحاليل", icon: "/lap-icon.png", color: "#ffb6c1", neon: "#ff69b4" },
+  { key: "xray", label: "أشعة", icon: "/physio-icon.png", color: "#a9a9ff", neon: "#7f7fff" },
+  { key: "pharmacist", label: "صيدلي", icon: "/pharmacist-icon.png", color: "#b0ffb0", neon: "#00ff00" },
+  { key: "nutrition", label: "استشاري تغذية", icon: "/doctor-icon.png", color: "#ffecb3", neon: "#ffe066" },
+  { key: "psychology", label: "علاج نفسي", icon: "/doctor-icon.png", color: "#e1b3ff", neon: "#c266ff" },
+  { key: "babycare", label: "تمريض حديثي الولادة", icon: "/nurse-icon.png", color: "#ffe4b3", neon: "#ffd700" },
 ];
 
 export default function OrderNow({ user }) {
@@ -152,15 +152,21 @@ export default function OrderNow({ user }) {
           {providerTypes.map((type) => (
             <div
               key={type.key}
-              className="order-card"
-              style={{ background: type.color }}
+              className="order-card metallic-card"
+              style={{
+                background: `linear-gradient(135deg, ${type.color} 60%, ${type.neon} 100%)`,
+                boxShadow: `0 0 18px 2px ${type.neon}, 0 2px 18px #0002`,
+                border: `2.5px solid ${type.neon}`,
+                color: "#222",
+                textShadow: `0 0 8px ${type.neon}, 0 2px 8px #fff`
+              }}
               onClick={() => {
                 setSelectedType(type);
                 setStep(1);
               }}
             >
-              <img src={type.icon} alt={type.label} className="order-card-icon" />
-              <div>{type.label}</div>
+              <img src={type.icon} alt={type.label} className="order-card-icon" style={{filter:"drop-shadow(0 0 8px "+type.neon+")"}} />
+              <div style={{fontWeight:'bold',fontSize:'1.15em',textShadow:`0 0 8px ${type.neon}`}}>{type.label}</div>
             </div>
           ))}
         </div>
@@ -181,7 +187,7 @@ export default function OrderNow({ user }) {
             return (
               <div
                 key={s.id}
-                className={`service-card-modern${isSelected ? " selected" : ""}`}
+                className={`service-card-modern service-card-special${isSelected ? " selected" : ""}`}
                 onClick={() => {
                   setSelectedServices(prev => {
                     let next;
@@ -198,30 +204,70 @@ export default function OrderNow({ user }) {
                     return next;
                   });
                 }}
+                style={{
+                  background: isSelected
+                    ? "linear-gradient(135deg,#fffbe6 60%,#e3f6ff 100%)"
+                    : "linear-gradient(135deg,#f7fafc 60%,#e3f2fd 100%)",
+                  border: isSelected ? "2.5px solid #ffd700" : "2px solid #e2e8f0",
+                  boxShadow: isSelected ? "0 6px 32px #ffd70044" : "0 4px 24px #1976d21a",
+                  transition: "box-shadow 0.2s, border 0.2s, transform 0.15s"
+                }}
               >
-                <div className="service-icon-modern">
+                <div className="service-icon-modern" style={{background:isSelected?'#ffd700':'#1976d2',color:isSelected?'#222':'#fff',boxShadow:isSelected?'0 2px 12px #ffd70099':'0 2px 8px #1976d233'}}>
                   <span role="img" aria-label="خدمة">🩺</span>
                 </div>
                 <div className="service-info-modern">
-                  <div className="service-name-modern">{s.name}</div>
-                  <div className="service-price-modern">{s.basePrice} ج.م</div>
+                  <div className="service-name-modern" style={{fontWeight:'bold',fontSize:'1.18em',color:isSelected?'#ffd700':'#1976d2'}}>{s.name}</div>
+                  <div className="service-price-modern" style={{
+                    fontSize:'1.35em',
+                    color:isSelected?'#43a047':'#3182ce',
+                    fontWeight:'bold',
+                    textShadow:isSelected?'0 0 8px #ffd700':'0 0 8px #3182ce'
+                  }}>
+                    <span style={{fontFamily:'Cairo,Tajawal,Arial'}}> {s.basePrice} ج.م </span>
+                  </div>
                 </div>
-                {/* زر التالي يظهر أسفل آخر خدمة مختارة */}
+                {/* زر التالي وزر رجوع يظهران أسفل آخر خدمة مختارة */}
                 {selectedServices.length > 0 && lastSelectedIndex === idx && (
-                  <button
-                    className="next-btn-modern floating-next-btn"
-                    onClick={e => {
-                      e.stopPropagation();
-                      setStep(3);
-                    }}
-                  >
-                    التالي
-                  </button>
+                  <div style={{display:'flex',gap:10,justifyContent:'center',marginTop:12}}>
+                    <button
+                      className="next-btn-modern floating-next-btn"
+                      onClick={e => {
+                        e.stopPropagation();
+                        setStep(3);
+                      }}
+                    >
+                      التالي
+                    </button>
+                    <button
+                      className="back-btn-modern floating-back-btn"
+                      onClick={e => {
+                        e.stopPropagation();
+                        setStep(0);
+                      }}
+                    >
+                      رجوع
+                    </button>
+                  </div>
                 )}
               </div>
             );
           })}
         </div>
+        <button
+          style={{
+            marginTop:18,
+            background:'#e2e8f0',
+            color:'#3182ce',
+            border:'none',
+            borderRadius:'8px',
+            padding:'10px 22px',
+            fontWeight:'bold',
+            fontSize:'1em',
+            cursor:'pointer'
+          }}
+          onClick={()=>setStep(0)}
+        >رجوع</button>
       </div>
     );
   }
@@ -258,12 +304,39 @@ export default function OrderNow({ user }) {
           />
           {/* رفع مرفقات وتقارير طبية */}
           <div style={{margin:'12px 0'}}>
-            <label style={{fontWeight:'bold'}}>رفع مرفقات/تقارير طبية (اختياري):</label>
-            <input type="file" multiple onChange={e => setAttachments(e.target.files)} style={{marginTop:6}} />
+            <label htmlFor="attach-input" style={{fontWeight:'bold',marginBottom:6,display:'block'}}>رفع مرفقات/تقارير طبية (اختياري):</label>
+            <label className="attach-btn-modern" htmlFor="attach-input">
+              <span role="img" aria-label="مرفق" style={{marginLeft:6}}>📎</span>
+              اختر الملفات
+            </label>
+            <input id="attach-input" type="file" multiple onChange={e => setAttachments(e.target.files)} style={{display:'none'}} />
+            {attachments.length > 0 && (
+              <div style={{marginTop:8}}>
+                <b>الملفات المختارة:</b>
+                <ul style={{paddingRight:18}}>
+                  {Array.from(attachments).map((f,i) => <li key={i} style={{color:'#3182ce',fontWeight:'bold'}}>{f.name}</li>)}
+                </ul>
+              </div>
+            )}
           </div>
           <button type="submit" disabled={sending} className="modern-send-btn">
             {sending ? <span className="loader"></span> : <><span role="img" aria-label="إرسال">🚀</span> إرسال الطلب</>}
           </button>
+          <button
+            type="button"
+            style={{
+              marginTop:12,
+              background:'#e2e8f0',
+              color:'#3182ce',
+              border:'none',
+              borderRadius:'8px',
+              padding:'10px 22px',
+              fontWeight:'bold',
+              fontSize:'1em',
+              cursor:'pointer'
+            }}
+            onClick={()=>setStep(1)}
+          >رجوع</button>
         </form>
         {pendingOrder && (
           <OrderPendingPopup

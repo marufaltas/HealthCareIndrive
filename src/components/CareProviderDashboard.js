@@ -178,6 +178,19 @@ export default function CareProviderDashboard({ user, setUser }) {
             <div style={{marginBottom:8}}><b>الخدمات المطلوبة:</b> <span style={{color:'#3182ce'}}>{selectedOrder.serviceNames ? selectedOrder.serviceNames.join(", ") : selectedOrder.service}</span></div>
             <div style={{marginBottom:8}}><b>السعر الأساسي:</b> <span style={{color:'#232946'}}>{selectedOrder.basePrice} ج.م</span></div>
             <div style={{marginBottom:8}}><b>السعر المقترح من المريض:</b> <span style={{color:'#232946'}}>{selectedOrder.suggestedPrice} ج.م</span></div>
+            {/* عرض المرفقات/التقارير */}
+            {selectedOrder.attachments && selectedOrder.attachments.length > 0 && (
+              <div style={{marginBottom:8}}>
+                <b>المرفقات/التقارير:</b>
+                <ul style={{paddingRight:18}}>
+                  {selectedOrder.attachments.map((f,i) => (
+                    <li key={i} style={{color:'#3182ce',fontWeight:'bold'}}>
+                      <span role="img" aria-label="مرفق">📎</span> {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <div style={{margin: "10px 0"}}>
               <iframe
                 title="خريطة المريض"

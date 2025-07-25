@@ -36,7 +36,18 @@ export default function Profile({ user }) {
               ))}
             </div>
             <textarea placeholder="اكتب تعليقك (اختياري)" value={comment} onChange={e => setComment(e.target.value)} style={{width:"100%",marginBottom:8}} />
-            <button onClick={()=>{setShowRating(false);setRating(0);setComment("");}} style={{background:'#3182ce',color:'#fff',padding:'8px 18px',border:'none',borderRadius:8}}>إرسال التقييم</button>
+            <button
+              onClick={()=>{
+                // حفظ التقييم في db.json (مثال فقط)
+                fetch("http://localhost:5000/ratings", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ userId: user.id, rating, comment })
+                });
+                setShowRating(false); setRating(0); setComment("");
+              }}
+              style={{background:'#3182ce',color:'#fff',padding:'8px 18px',border:'none',borderRadius:8}}
+            >إرسال التقييم</button>
             <button onClick={()=>setShowRating(false)} style={{marginTop:8}}>إغلاق</button>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Settings.css";
+import { useTheme } from "./ThemeContext";
 
 export default function Settings({ setUser, user }) {
   const [showAccount, setShowAccount] = useState(false);
@@ -10,16 +11,28 @@ export default function Settings({ setUser, user }) {
   // إعدادات التطبيق
   const [fontSize, setFontSize] = useState(16);
   // الوضع الليلي: جلب من localStorage إذا كان مفعل مسبقاً
-  const [darkMode, setDarkMode] = useState(() => {
-    const saved = localStorage.getItem('darkMode');
-    return saved === 'true';
-  });
+  const { dark, setDark } = useTheme();
   const [invertColors, setInvertColors] = useState(false);
+  const [showStats, setShowStats] = useState(false);
+
+  // جلب الطلبات لهذا المستخدم
+  const [orders, setOrders] = useState([]);
+  React.useEffect(() => {
+    if (!user) return;
+    fetch(`https://helthend-production.up.railway.app/orders?patientId=${user.id}`)
+      .then(res => res.json())
+      .then(setOrders);
+  }, [user]);
+
+  // حساب الإحصائيات
+  const doneCount = orders.filter(o => o.status === "done").length;
+  const rejectedCount = orders.filter(o => o.status === "rejected").length;
+  const incompleteCount = orders.filter(o => o.status !== "done" && o.status !== "rejected").length;
 
   // تطبيق إعدادات الخط والوضع الليلي والعكس
   React.useEffect(() => {
     document.body.style.fontSize = fontSize + "px";
-    if (darkMode) {
+    if (dark) {
       document.body.setAttribute('data-theme', 'dark');
       document.body.classList.add('dark');
     } else {
@@ -27,8 +40,7 @@ export default function Settings({ setUser, user }) {
       document.body.classList.remove('dark');
     }
     document.body.classList.toggle("invert-colors", invertColors);
-    localStorage.setItem('darkMode', darkMode);
-  }, [fontSize, darkMode, invertColors]);
+  }, [fontSize, dark, invertColors]);
 
   function handleLogout() {
     setUser(null);
@@ -57,7 +69,7 @@ export default function Settings({ setUser, user }) {
       <ul>
         <li onClick={() => setShowAccount(true)}>إعدادات الحساب</li>
         <li onClick={() => setShowAppSettings(true)}>إعدادات التطبيق</li>
-        <li>الإحصائيات</li>
+        <li onClick={() => setShowStats(true)}>الإحصائيات</li>
         <li onClick={handleLogout} style={{ color: "#e53e3e", fontWeight: "bold" }}>تسجيل الخروج</li>
         <li onClick={() => setShowAbout(true)} style={{ color: "gold", fontWeight: "bold", fontSize: "1.1em" }}>عن المطور ⭐</li>
       </ul>
@@ -101,15 +113,69 @@ export default function Settings({ setUser, user }) {
               <button
                 id="darkModeToggle"
                 className="theme-toggle-btn"
-                style={{background:darkMode?'#232946':'#e2e8f0',color:darkMode?'#e3f6ff':'#232946',border:'1px solid #38b2ac',borderRadius:8,padding:'8px 18px',fontWeight:'bold',fontSize:'1em',cursor:'pointer',marginRight:8}}
-                onClick={()=>setDarkMode(d=>!d)}
-              >{darkMode ? 'وضع النهار' : 'وضع الليل'}</button>
+                style={{background:dark?'#232946':'#e2e8f0',color:dark?'#e3f6ff':'#232946',border:'1px solid #38b2ac',borderRadius:8,padding:'8px 18px',fontWeight:'bold',fontSize:'1em',cursor:'pointer',marginRight:8}}
+                onClick={()=>setDark(d=>!d)}
+              >{dark ? 'وضع النهار' : 'وضع الليل'}</button>
             </div>
             <div style={{marginTop:12}}>
               <label>عكس الألوان (لضعاف البصر):</label>
               <input type="checkbox" checked={invertColors} onChange={e => setInvertColors(e.target.checked)} />
             </div>
             <button type="button" onClick={() => setShowAppSettings(false)} className="close-popup-btn">إغلاق</button>
+          </div>
+        </div>
+      )}
+
+      {/* Popup الإحصائيات */}
+      {showStats && (
+        <div className="popup-overlay">
+          <div className="popup-card" style={{maxWidth:420}}>
+            <h3 style={{textAlign:'center',marginBottom:18,color:'#3182ce'}}>إحصائيات حسابك</h3>
+            <div style={{display:'flex',gap:18,justifyContent:'center',flexWrap:'wrap'}}>
+              <div style={{
+                background:'linear-gradient(135deg,#43a047 60%,#38b2ac 100%)',
+                color:'#fff',
+                borderRadius:14,
+                boxShadow:'0 2px 12px #43a04755',
+                padding:'22px 18px',
+                minWidth:120,
+                textAlign:'center',
+                fontWeight:'bold',
+                fontSize:'1.15em'
+              }}>
+                الخدمات المنجزة<br/>
+                <span style={{fontSize:'2em',color:'#ffd700'}}>{doneCount}</span>
+              </div>
+              <div style={{
+                background:'linear-gradient(135deg,#e53e3e 60%,#f56565 100%)',
+                color:'#fff',
+                borderRadius:14,
+                boxShadow:'0 2px 12px #e53e3e55',
+                padding:'22px 18px',
+                minWidth:120,
+                textAlign:'center',
+                fontWeight:'bold',
+                fontSize:'1.15em'
+              }}>
+                الخدمات المرفوضة<br/>
+                <span style={{fontSize:'2em',color:'#fff'}}>{rejectedCount}</span>
+              </div>
+              <div style={{
+                background:'linear-gradient(135deg,#3182ce 60%,#b8b8b8 100%)',
+                color:'#fff',
+                borderRadius:14,
+                boxShadow:'0 2px 12px #3182ce55',
+                padding:'22px 18px',
+                minWidth:120,
+                textAlign:'center',
+                fontWeight:'bold',
+                fontSize:'1.15em'
+              }}>
+                الخدمات الغير مكتملة<br/>
+                <span style={{fontSize:'2em',color:'#fff'}}>{incompleteCount}</span>
+              </div>
+            </div>
+            <button type="button" onClick={() => setShowStats(false)} className="close-popup-btn" style={{marginTop:18}}>إغلاق</button>
           </div>
         </div>
       )}

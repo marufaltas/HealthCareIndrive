@@ -144,14 +144,6 @@ function AppContent() {
   const { dark, setDark } = useTheme();
   return (
     <div className={"app-root" + (dark ? " dark" : "") }>
-      <button
-        className="theme-toggle-btn"
-        onClick={() => setDark(d => !d)}
-        style={{position:'fixed',top:18,left:18,zIndex:2000,background:dark?'#222':'#fff',color:dark?'#fff':'#222',border:'none',borderRadius:8,padding:'8px 18px',boxShadow:'0 2px 8px #0002',fontWeight:'bold',cursor:'pointer'}}
-        aria-label="تبديل الوضع الليلي"
-      >
-        {dark ? '☀️ وضع النهار' : '🌙 وضع الليل'}
-      </button>
       {showWelcome ? (
         <div className="welcome-screen">
           <div className="welcome-logo-circle">
