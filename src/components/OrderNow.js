@@ -3,6 +3,11 @@ import OrderPendingPopup from "./OrderPendingPopup";
 import FeaturesSoonCard from "./FeaturesSoonCard";
 import "./OrderNow.css";
 
+const API_BASE =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5000"
+    : "https://helthend-production.up.railway.app";
+
 const providerTypes = [
   { key: "doctor", label: "طبيب", icon: "/doctor-icon.png", color: "#3182ce" },
   { key: "nurse", label: "ممرض", icon: "/nurse-icon.png", color: "#38b2ac" },
@@ -14,30 +19,26 @@ const providerTypes = [
   { key: "psychology", label: "علاج نفسي", icon: "/doctor-icon.png", color: "#805ad5" },
   { key: "babycare", label: "تمريض حديثي الولادة", icon: "/nurse-icon.png", color: "#f6ad55" },
 ];
-  // دعم رفع مرفقات وتقارير طبية
-  const [attachments, setAttachments] = useState([]);
 
 export default function OrderNow({ user }) {
+  const [attachments, setAttachments] = useState([]);
   const [step, setStep] = useState(0);
   const [selectedType, setSelectedType] = useState(null);
   const [specialties, setSpecialties] = useState([]);
   const [selectedSpecialty, setSelectedSpecialty] = useState("");
   const [services, setServices] = useState([]);
-  // دعم اختيار أكثر من خدمة
   const [selectedServices, setSelectedServices] = useState([]);
   const [location, setLocation] = useState({ address: "", lat: "", lng: "" });
   const [basePrice, setBasePrice] = useState(0);
   const [suggestedPrice, setSuggestedPrice] = useState("");
   const [sending, setSending] = useState(false);
-  // متغير لتحديد آخر عنصر مختار (لزر التالي العصري)
   const [lastSelectedIndex, setLastSelectedIndex] = useState(null);
-  // متغير لعرض Popup الانتظار بعد الإرسال
   const [pendingOrder, setPendingOrder] = useState(null);
 
   // جلب التخصصات من db.json
   useEffect(() => {
     if (selectedType) {
-      fetch(`https://helthend-production.up.railway.app/services?providerType=${selectedType.key}`)
+      fetch(`${API_BASE}/services?providerType=${selectedType.key}`)
         .then(res => res.json())
         .then(data => {
           // استخرج التخصصات الفريدة
@@ -58,7 +59,7 @@ export default function OrderNow({ user }) {
       else if (selectedType.key === "lab") endpoint = "/labServices";
       else if (selectedType.key === "xray") endpoint = "/xrayServices";
       if (endpoint) {
-        fetch(`https://helthend-production.up.railway.app${endpoint}`)
+        fetch(`${API_BASE}${endpoint}`)
           .then(res => res.json())
           .then(data => setServices(data || []));
       } else {
@@ -129,7 +130,7 @@ export default function OrderNow({ user }) {
       address: location.address,
       attachments: attachments.length > 0 ? Array.from(attachments).map(f => f.name) : []
     };
-    fetch("https://helthend-production.up.railway.app/orders", {
+    fetch(`${API_BASE}/orders`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(orderBody),

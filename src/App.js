@@ -12,6 +12,11 @@ import AdminPage from "./AdminPage";
 import AdminServicesPage from "./AdminServicesPage";
 import "./App.css";
 
+// استخدم هذا المتغير في كل fetch بدلاً من كتابة الرابط مباشرة
+const API_BASE =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5000"
+    : "https://helthend-production.up.railway.app";
 
 function GlobalNotificationPopup({ user }) {
   const [notification, setNotification] = useState(null);
@@ -20,7 +25,7 @@ function GlobalNotificationPopup({ user }) {
   useEffect(() => {
     if (!user) return;
     // جلب آخر إشعار موجه للفئة المناسبة
-    fetch(`https://helthend-production.up.railway.app/notifications?target=${user.type === 'patient' ? 'patients' : 'providers'}&_sort=date&_order=desc&_limit=1`)
+    fetch(`${API_BASE}/notifications?target=${user.type === 'patient' ? 'patients' : 'providers'}&_sort=date&_order=desc&_limit=1`)
       .then(res => res.json())
       .then(data => {
         if (data.length > 0) {
@@ -34,6 +39,7 @@ function GlobalNotificationPopup({ user }) {
 
   // دعم الروابط في نص الإشعار (مثال: [رابط](https://example.com))
   function renderMessage(msg) {
+    if (!msg || typeof msg !== "string") return null;
     return msg.split(/(\[.*?\]\(.*?\))/g).map((part, i) => {
       const match = part.match(/\[(.*?)\]\((.*?)\)/);
       if (match) {
@@ -43,13 +49,16 @@ function GlobalNotificationPopup({ user }) {
     });
   }
 
+  // دعم body إذا لم يوجد message
+  const notifText = notification.message || notification.body || "";
+
   return (
     <div className="popup-overlay" style={{zIndex: 10000}}>
       <div className="popup-card" style={{maxWidth:400,position:'relative'}}>
         <button onClick={()=>setShow(false)} style={{position:'absolute',top:8,left:8,background:'none',border:'none',fontSize:'1.5em',color:'#888',cursor:'pointer'}}>×</button>
         <h3 style={{color:'#3182ce'}}>إشعار هام</h3>
-        <div style={{margin:'12px 0',fontSize:'1.1em'}}>{renderMessage(notification.message)}</div>
-        <div style={{fontSize:'0.9em',color:'#888'}}>بتاريخ: {new Date(notification.date).toLocaleString()}</div>
+        <div style={{margin:'12px 0',fontSize:'1.1em'}}>{renderMessage(notifText)}</div>
+        <div style={{fontSize:'0.9em',color:'#888'}}>بتاريخ: {new Date(notification.date || notification.createdAt).toLocaleString()}</div>
       </div>
     </div>
   );
@@ -75,6 +84,7 @@ function AppContent() {
   };
   const [activeTab, setActiveTab] = useState("order");
   const [showWelcome, setShowWelcome] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (showWelcome) {
@@ -85,7 +95,13 @@ function AppContent() {
 
   // إذا لم يسجل الدخول، أظهر شاشة تسجيل الدخول/إنشاء حساب
   if (!user) {
-    return <LoginRegister setUser={setUser} />;
+    return (
+      <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',height:'100vh',background:'#f7fafc'}}>
+        <h2 style={{color:'#3182ce',marginBottom:18}}>يرجى تسجيل الدخول للمتابعة</h2>
+        <LoginRegister setUser={setUser} />
+        {error && <div style={{color:'red',marginTop:18,fontWeight:'bold'}}>خطأ: {error}</div>}
+      </div>
+    );
   }
 
   // توجيه حسب نوع الحساب
@@ -110,7 +126,7 @@ function AppContent() {
       {showWelcome ? (
         <div className="welcome-screen">
           <div className="welcome-logo-circle">
-            <img src="/wight.png" alt="شعار الموقع" />
+            <img src={process.env.PUBLIC_URL + "/wight.png"} alt="شعار الموقع" />
           </div>
           <h1 style={{fontWeight:900,marginTop:18,marginBottom:10,fontSize:'2.1em',color:'#215175',letterSpacing:'1px'}}>
             أهلاً بيك في <span style={{ color: "#38b2ac" }}>HealthCare InDrive</span> للرعاية الصحية

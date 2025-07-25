@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import AdminServices from "./components/AdminServices";
 
+// استخدم هذا المتغير في كل fetch بدلاً من كتابة الرابط مباشرة
+const API_BASE =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5000"
+    : "https://helthend-production.up.railway.app";
 
 const AdminPage = () => {
   const [allServices, setAllServices] = useState({});
@@ -17,7 +22,7 @@ const AdminPage = () => {
     ];
     Promise.all(
       serviceKeys.map(key =>
-        fetch(`https://helthend-production.up.railway.app/${key}`)
+        fetch(`${API_BASE}/${key}`)
           .then(res => res.ok ? res.json() : [])
           .catch(() => [])
       )
@@ -36,7 +41,7 @@ const AdminPage = () => {
     // تحديث الأسعار فعلياً في json-server
     Object.keys(updated).forEach(serviceType => {
       updated[serviceType].forEach(service => {
-        fetch(`https://helthend-production.up.railway.app/${serviceType}/${service.id}`, {
+        fetch(`${API_BASE}/${serviceType}/${service.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ basePrice: service.basePrice })

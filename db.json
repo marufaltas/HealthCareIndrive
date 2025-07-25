@@ -27,20 +27,6 @@
       "idCard": {},
       "degree": {},
       "license": {}
-    },
-    {
-      "id": "3d50",
-      "fullName": "اسراء جمال",
-      "age": "23",
-      "address": "الدمرداش",
-      "phone": "0120000000",
-      "email": "mari112@gmail.com",
-      "password": "1234",
-      "type": "provider",
-      "providerType": "nurse",
-      "idCard": {},
-      "degree": {},
-      "license": {}
     }
   ],
   "nurseServices": [
@@ -1737,6 +1723,28 @@
       "specialty": "طوارئ",
       "name": "كشف طوارئ منزلي",
       "basePrice": 350
+    }
+  ],
+  "notifications": [
+    {
+      "id": "n001",
+      "title": "تنبيه هام",
+      "body": "يرجى مراجعة بياناتك الطبية.",
+      "targetType": "patient",
+      "targetId": "d080",
+      "active": true,
+      "showAsPopup": true,
+      "createdAt": "2025-07-16T10:00:00.000Z"
+    },
+    {
+      "id": "n002",
+      "title": "إشعار جديد",
+      "body": "تم إضافة خدمة جديدة.",
+      "targetType": "provider",
+      "targetId": "d811",
+      "active": true,
+      "showAsPopup": true,
+      "createdAt": "2025-07-16T10:05:00.000Z"
     }
   ]
 }

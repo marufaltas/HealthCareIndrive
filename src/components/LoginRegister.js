@@ -2,6 +2,11 @@ import React, { useState } from "react";
 import "./LoginRegister.css";
 import ErrorPopup from "./ErrorPopup";
 
+const API_BASE =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5000"
+    : "https://helthend-production.up.railway.app";
+
 export default function LoginRegister({ setUser }) {
   const [isRegister, setIsRegister] = useState(false);
   const [form, setForm] = useState({
@@ -35,7 +40,7 @@ export default function LoginRegister({ setUser }) {
 
     if (isRegister) {
       // تسجيل مستخدم جديد
-      fetch("https://helthend-production.up.railway.app/users", {
+      fetch(`${API_BASE}/users`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -51,16 +56,16 @@ export default function LoginRegister({ setUser }) {
             });
           }
         })
-        .catch(() => {
+        .catch((err) => {
           setLoading(false);
           setErrorPopup({
-            message: "حدث خطأ أثناء إنشاء الحساب. حاول مرة أخرى لاحقًا.",
+            message: "حدث خطأ أثناء إنشاء الحساب. حاول مرة أخرى لاحقًا. " + err.message,
           });
         });
     } else {
       // تسجيل دخول: تحقق من البريد وكلمة المرور
       fetch(
-        `https://helthend-production.up.railway.app/users?email=${form.email}&password=${form.password}`
+        `${API_BASE}/users?email=${form.email}&password=${form.password}`
       )
         .then((res) => res.json())
         .then((users) => {
@@ -81,10 +86,10 @@ export default function LoginRegister({ setUser }) {
             });
           }
         })
-        .catch(() => {
+        .catch((err) => {
           setLoading(false);
           setErrorPopup({
-            message: "حدث خطأ أثناء محاولة تسجيل الدخول. حاول مرة أخرى لاحقًا.",
+            message: "حدث خطأ أثناء محاولة تسجيل الدخول. حاول مرة أخرى لاحقًا. " + err.message,
           });
         });
     }
@@ -100,7 +105,7 @@ export default function LoginRegister({ setUser }) {
         />
       )}
       <div className="login-logo-circle login-logo-circle-main">
-        <img src="/wight.png" alt="شعار الموقع" />
+        <img src={process.env.PUBLIC_URL + "/wight.png"} alt="شعار الموقع" />
       </div>
       <div className="login-register-card">
         <h2>{isRegister ? "إنشاء حساب جديد" : "تسجيل الدخول"}</h2>

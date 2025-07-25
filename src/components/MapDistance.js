@@ -5,12 +5,12 @@ import "leaflet/dist/leaflet.css";
 
 // أيقونة مخصصة للطرفين
 const patientIcon = new L.Icon({
-  iconUrl: "/user-placeholder.png",
+  iconUrl: process.env.PUBLIC_URL + "/user-placeholder.png",
   iconSize: [38, 38],
   iconAnchor: [19, 38],
 });
 const providerIcon = new L.Icon({
-  iconUrl: "/nurse-icon.png",
+  iconUrl: process.env.PUBLIC_URL + "/nurse-icon.png",
   iconSize: [38, 38],
   iconAnchor: [19, 38],
 });

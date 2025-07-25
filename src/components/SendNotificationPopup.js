@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import "./SendNotificationPopup.css";
 
+const API_BASE =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5000"
+    : "https://helthend-production.up.railway.app";
+
+function SendNotificationPopup({ onClose }) {
   const [message, setMessage] = useState("");
   const [toPatient, setToPatient] = useState(false);
   const [toProvider, setToProvider] = useState(false);
@@ -11,7 +17,7 @@ import "./SendNotificationPopup.css";
   const [notifications, setNotifications] = useState([]);
   // جلب الإشعارات الحالية
   useEffect(() => {
-    fetch("https://helthend-production.up.railway.app/notifications?_sort=date&_order=desc")
+    fetch(`${API_BASE}/notifications?_sort=date&_order=desc`)
       .then(res => res.json())
       .then(setNotifications);
   }, []);
@@ -32,7 +38,7 @@ import "./SendNotificationPopup.css";
       date: new Date().toISOString(),
       showOnce
     };
-    fetch("https://helthend-production.up.railway.app/notifications", {
+    fetch(`${API_BASE}/notifications`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(notifBody)
@@ -50,7 +56,7 @@ import "./SendNotificationPopup.css";
   }
 
   function handleDeleteNotif(id) {
-    fetch(`https://helthend-production.up.railway.app/notifications/${id}`, { method: 'DELETE' })
+    fetch(`${API_BASE}/notifications/${id}`, { method: 'DELETE' })
       .then(() => setNotifications(notifications.filter(n => n.id !== id)));
   }
 
@@ -112,3 +118,5 @@ import "./SendNotificationPopup.css";
     </div>
   );
 }
+
+export default SendNotificationPopup;
