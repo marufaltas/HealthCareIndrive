@@ -114,3 +114,12 @@ body[data-theme="dark"] {
   flex: 1;
   padding-bottom: 80px;
 }
+
+.floating-beta-popup {
+  animation: floatingBeta 2.2s infinite alternate;
+}
+@keyframes floatingBeta {
+  0% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-18px) scale(1.03); }
+  100% { transform: translateY(0px) scale(1); }
+}

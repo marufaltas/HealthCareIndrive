@@ -51,6 +51,10 @@ function SendNotificationPopup({ onClose }) {
       .then(newNotif => {
         setSending(false);
         setSuccess(true);
+        // إذا لم يرجع السيرفر id أضف الإشعار يدوياً
+        if (!newNotif.id) {
+          newNotif = { ...notifBody, id: Math.random().toString(36).slice(2) };
+        }
         setNotifications(prev => [newNotif, ...prev]);
         setTimeout(() => {
           setSuccess(false);

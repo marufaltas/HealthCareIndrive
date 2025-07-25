@@ -24,11 +24,12 @@ function GlobalNotificationPopup({ user }) {
 
   useEffect(() => {
     if (!user) return;
-    // جلب آخر إشعار موجه للفئة المناسبة
+    // تحقق من أن الإشعار لم يتم تجاهله مسبقاً
+    const ignored = localStorage.getItem("ignoredNotifId");
     fetch(`${API_BASE}/notifications?target=${user.type === 'patient' ? 'patients' : 'providers'}&_sort=date&_order=desc&_limit=1`)
       .then(res => res.json())
       .then(data => {
-        if (data.length > 0) {
+        if (data.length > 0 && data[0].id !== ignored) {
           setNotification(data[0]);
           setShow(true);
         }
@@ -36,6 +37,11 @@ function GlobalNotificationPopup({ user }) {
   }, [user]);
 
   if (!notification || !show) return null;
+
+  function handleIgnore() {
+    localStorage.setItem("ignoredNotifId", notification.id);
+    setShow(false);
+  }
 
   // دعم الروابط في نص الإشعار (مثال: [رابط](https://example.com))
   function renderMessage(msg) {
@@ -59,6 +65,22 @@ function GlobalNotificationPopup({ user }) {
         <h3 style={{color:'#3182ce'}}>إشعار هام</h3>
         <div style={{margin:'12px 0',fontSize:'1.1em'}}>{renderMessage(notifText)}</div>
         <div style={{fontSize:'0.9em',color:'#888'}}>بتاريخ: {new Date(notification.date || notification.createdAt).toLocaleString()}</div>
+        <button
+          style={{
+            background:'#43a047',
+            color:'#fff',
+            border:'none',
+            borderRadius:'8px',
+            padding:'10px 22px',
+            fontSize:'1em',
+            fontWeight:'bold',
+            cursor:'pointer',
+            marginTop:'18px'
+          }}
+          onClick={handleIgnore}
+        >
+          تم قراءته - لا تظهر هذا الاشعار مرة أخرى
+        </button>
       </div>
     </div>
   );
@@ -84,6 +106,7 @@ function AppContent() {
   };
   const [activeTab, setActiveTab] = useState("order");
   const [showWelcome, setShowWelcome] = useState(true);
+  const [showBetaPopup, setShowBetaPopup] = useState(false); // تعديل: يبدأ false
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -92,6 +115,12 @@ function AppContent() {
       return () => clearTimeout(timer);
     }
   }, [showWelcome]);
+
+  // اجعل الـ popup يظهر بعد 3 ثواني من عمل reload أو تسجيل الدخول
+  useEffect(() => {
+    const timer = setTimeout(() => setShowBetaPopup(true), 3000);
+    return () => clearTimeout(timer);
+  }, [user]);
 
   // إذا لم يسجل الدخول، أظهر شاشة تسجيل الدخول/إنشاء حساب
   if (!user) {
@@ -168,6 +197,43 @@ function AppContent() {
         </div>
       )}
       {user && <GlobalNotificationPopup user={user} />}
+      {showBetaPopup && (
+        <div className="popup-overlay" style={{zIndex: 99999}}>
+          <div
+            className="popup-card floating-beta-popup"
+            style={{
+              maxWidth: 420,
+              textAlign: 'center',
+              padding: '38px 28px',
+              borderRadius: '18px',
+              boxShadow: '0 8px 40px #3182ce33',
+              background: 'linear-gradient(135deg,#38b2ac 10%,#3182ce 100%)',
+              color: '#fff',
+              animation: 'floatingBeta 2.2s infinite alternate'
+            }}
+          >
+            <h2 style={{fontFamily:'Cairo, Tajawal, Arial',fontWeight:'bold',fontSize:'2em',marginBottom:18,letterSpacing:'1px'}}>هذا الإصدار هو نسخة تجريبية للموقع</h2>
+            <div style={{fontSize:'1.15em',marginBottom:18,fontFamily:'Cairo, Tajawal, Arial'}}>وجاري العمل على بعض المميزات والتحسينات للوصول للنسخة النهائية</div>
+            <div style={{fontSize:'1em',marginBottom:18,color:'#ffd700',fontFamily:'Cairo, Tajawal, Arial'}}>
+              تم تطوير هذا الموقع بواسطة : <b>Maru Faltas Shawqy</b>
+            </div>
+            <button
+              style={{
+                background:'#fff',
+                color:'#3182ce',
+                border:'none',
+                borderRadius:'8px',
+                padding:'10px 22px',
+                fontSize:'1em',
+                fontWeight:'bold',
+                cursor:'pointer',
+                marginTop:'8px'
+              }}
+              onClick={()=>setShowBetaPopup(false)}
+            >متابعة</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

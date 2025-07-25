@@ -10,7 +10,10 @@ const serviceLabels = {
   physioServices: "خدمات العلاج الطبيعي",
   pharmacistServices: "خدمات الصيدلي",
   labServices: "خدمات التحاليل",
-  xrayServices: "خدمات الأشعة"
+  xrayServices: "خدمات الأشعة",
+  psychologyServices: "خدمات العلاج النفسي",      // جديد
+  babycareServices: "خدمات تمريض حديثي الولادة",   // جديد
+  nutritionServices: "خدمات استشاري التغذية"       // جديد
 };
 
 const AdminServices = ({ allServices, onUpdate }) => {
